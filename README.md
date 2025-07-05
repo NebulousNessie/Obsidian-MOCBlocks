@@ -26,6 +26,9 @@ A plugin for obsidian which adds 'MOC Blocks': simple code blocks to add clickab
 ````
 Note: this is the minimum syntax. Every character here is <ins>**required**</ins>, just substitute in your note and unique moc ID.
 
+### Functions
+- moc_id: the unique ID which links to the marker data file in your vault.
+- image: the image (already saved somewhere in your vault) to display in the MOC Block.
 ---
 # Bugs/ Feature Requests
 - If you have found a bug, or have any feature requests please raise the issue in the 'Issues' section of this Git Repo.
@@ -33,10 +36,12 @@ Note: this is the minimum syntax. Every character here is <ins>**required**</ins
 ## In the pipeline
 - Remove the requirement for manually adding a MOC Block code block, streamlining additions. (Using a ribbon icon and/or commands and/or hotkeys).
 - Make MOC Block ID generation automatic (so a MOCBlock ID doesn't have to be made up).
+- Hide marker ID files in an obsidian-invisible folder. Persists on plugin removal.
 - Allow for marker type resizing.
 - Allow for polyline and/or shape drawing for links.
 - Make MOC Block marker links create normal obsidian backlinks, to allow connections to be viewed in graph view or backlinks tab.
 - Add editor tools in MOC Blocks, like zoom level and multi-select.
+- Add drag-and drop into empty mocblock of image to display.
 
 ---
 # Support

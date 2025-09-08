@@ -1,48 +1,39 @@
-# Obsidian-MOCBlocks
-A plugin for obsidian which adds 'MOC Blocks': simple code blocks to add clickable links to images in a note.
+THIS PLUGIN IS IN BETA! It is my first plugin so take with a pinch of salt. Any bugs, please report it on the git repository, thank you!
+
+This is a plugin for creating simple Maps of Content, with a background image, using new 'MOC Block' code blocks.
 
 ---
-# Usage
-- A MOC Block (Map of Content code Block) is a code block which displays an image which can have clickable markers added.
+## How the Plugin Works
+1. Click the ribbon icon.
+2. Choose an image, and click 'insert'.
+3. A 'moc block' code block is created, using the syntax below. This will render your chosen image into obsidian.
+4. In editor mode, you can click one of two buttons:
+  Add pin: clicking on the image now drops a pin on the image, and allows you to edit the pin attributes (label, link) within a popup.
+  Add polyline: allows you to draw a polygon on the image, within which will be clickable. Polygon attributed are added in the popup.
+5. Each marker (pin or polygon) has a marker style attributed to it. You can add, change, or delete marker styles in the plugin settings. NOTE: If a previously used marker style is deleted, any markers which used that style will revert to the default style (light green), until changed or another marker with the same name is added in settings again.
 
-## Adding a MOC Block
-- To use the plugin, write out a code block (see syntax below) which references the image you want to use, and a unique ID. (note: this ID is for the marker data, and doesn't store the image data at all.)
-- The MOC Block should render your image.
-- In editor mode, you can right click on the image to open up the 'New Marker' window. You must include a linked note, and a select a marker type from the dropdown.
-- Marker types are globally defined in the plugin settings. To add more, navigate to the plugin settings.
-  - Note: If you delete a marker type, wherever you have used it will default to the default marker type (orange map pin).
- 
-## Behind the Scenes
-- The way the MOC Block plugin works is by reading the MOC Block JSON (the syntax you put in your note), and fetching the marker data from the linked data note. 
 
-## Syntax
-````markdown
-```moc
-{
-"moc_id": "UniqueID1234",
-"image": "Image1.png"
-}
+---
+## The Syntax
+
+``` moc
+image: Image1.png
+moc_id: [AUTOMATICALLY GENERATED]
+image_width: [Image Px width, AUTOMATICALLY GENERATED]
 ```
-````
-Note: this is the minimum syntax. Every character here is <ins>**required**</ins>, just substitute in your note and unique moc ID.
 
-### Functions
-- moc_id: the unique ID which links to the marker data file in your vault.
-- image: the image (already saved somewhere in your vault) to display in the MOC Block.
 ---
-# Bugs/ Feature Requests
-- If you have found a bug, or have any feature requests please raise the issue in the 'Issues' section of this Git Repo.
+# Known issues
+- For up-to-date issues, see the ![[https://github.com/NebulousNessie/Obsidian-MOCBlocks|Git repository]]
 
-## In the pipeline
-- Remove the requirement for manually adding a MOC Block code block, streamlining additions. (Using a ribbon icon and/or commands and/or hotkeys).
-- Make MOC Block ID generation automatic (so a MOCBlock ID doesn't have to be made up).
-- Hide marker ID files in an obsidian-invisible folder. Persists on plugin removal.
-- Allow for marker type resizing.
-- Allow for polyline and/or shape drawing for links.
-- Make MOC Block marker links create normal obsidian backlinks, to allow connections to be viewed in graph view or backlinks tab.
-- Add editor tools in MOC Blocks, like zoom level and multi-select.
-- Add drag-and drop into empty mocblock of image to display.
+- The [[|image converter]] plugin breaks the MOC Block resizing feature.
+
+---
+# Inspiration
+- This plugin is inspired in part by the excellent 'leaflet' plugin, which allows a similar interface specific to maps. Check out that plugin to see if they have better features for your use case!
+  [[https://github.com/javalent/obsidian-leaflet]]
 
 ---
 # Support
-If you feel you would like to support my work (thank you!), please head over to my buymeacoffee page: https://buymeacoffee.com/nebulousnessie
+If you feel you would like to support my work (thank you!), please head over to my buymeacoffee page:
+  [[https://buymeacoffee.com/nebulousnessie]]

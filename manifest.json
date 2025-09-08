@@ -1,8 +1,8 @@
 {
-	"id": "obsidian-MOCBlocks",
-	"name": "Obsidian MOC Blocks",
+	"id": "moc-blocks",
+	"name": "MOC Blocks",
 	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
+	"minAppVersion": "1.8.0",
 	"description": "Interactive Maps of Content for organising vault visually.",
 	"author": "NebulousNessie",
 	"authorUrl": "https://github.com/NebulousNessie/Obsidian-MOC-Blocks",

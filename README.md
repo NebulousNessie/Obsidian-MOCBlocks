@@ -34,6 +34,7 @@ image_width: [Image Px width, AUTOMATICALLY GENERATED]
 # Inspiration
 
 - This plugin is inspired in part by the excellent [leaflet](https://github.com/javalent/obsidian-leaflet) plugin, which allows a similar interface specific to maps. Check out that plugin to see if they have better features for your use case!
+- Marker SVGs are pulled from [font awesome](https://fontawesome.com/icons?d=gallery&p=2&s=solid&m=free).
 
 ---
 # Support

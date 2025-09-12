@@ -1,4 +1,4 @@
-THIS PLUGIN IS IN BETA! It is my first plugin so take with a pinch of salt. Any bugs, please report it on the [git repository](https://github.com/NebulousNessie/Obsidian-MOCBlocks/issues), thank you!
+THIS PLUGIN IS IN BETA! It is my first plugin so take with a pinch of salt. Any bugs, please report it on the [git repository](https://github.com/NebulousNessie/Obsidian-MOCBlocks-Dev/issues), thank you!
 
 This is a plugin for creating simple Maps of Content, with a background image, using new 'MOC Block' code blocks.
 
@@ -34,7 +34,6 @@ image_width: [Image Px width, AUTOMATICALLY GENERATED]
 # Inspiration
 
 - This plugin is inspired in part by the excellent [leaflet](https://github.com/javalent/obsidian-leaflet) plugin, which allows a similar interface specific to maps. Check out that plugin to see if they have better features for your use case!
-- Marker SVGs are pulled from [font awesome](https://fontawesome.com/icons?d=gallery&p=2&s=solid&m=free).
 
 ---
 # Support

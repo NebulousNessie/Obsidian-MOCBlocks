@@ -41,7 +41,18 @@ export function renderPinMarker(
     
                         // Render the marker SVGs (polyline and pins)
                             if (svgMarkup) {
-                                markerEl.innerHTML = svgMarkup;
+
+                                // Deprecated innerHTML approach. Not allowed in obsidian plugins:
+                                    // markerEl.innerHTML = svgMarkup;
+                                    // const svgEl = markerEl.querySelector("svg");
+
+                                // Parse SVG markup without using innerHTML/outerHTML
+                                const parser = new DOMParser();
+                                const svgDoc = parser.parseFromString(svgMarkup, "image/svg+xml");
+                                const svgNode = svgDoc.documentElement;
+                                if (svgNode && svgNode.tagName.toLowerCase() === "svg") {
+                                    markerEl.appendChild(svgNode);
+                                }
                                 const svgEl = markerEl.querySelector("svg");
     
                                 if (svgEl) {

@@ -1,4 +1,4 @@
-import { PluginSettingTab, App, Setting } from "obsidian";
+import { PluginSettingTab, App, Setting, normalizePath } from "obsidian";
 import { renameDataFolder } from "./helpers";
 import MOCBlockPlugin from "./main";
 import { AVAILABLE_ICONS } from "./icons";
@@ -36,7 +36,8 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
-		containerEl.createEl("h2", { text: "Data file settings" });
+		//containerEl.createEl("h2", { text: "Data file settings" });
+		new Setting(containerEl).setName('Data file settings').setHeading();
 
 		// Add data folder setting
 		new Setting(containerEl)
@@ -52,8 +53,8 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 					pendingValue = value.trim();
 				});
 				text.inputEl.addEventListener("blur", async () => {
-					const oldPath = this.plugin.settings.dataFolder;
-					const newPath = pendingValue || "MOCData";
+					const oldPath = normalizePath(this.plugin.settings.dataFolder);
+					const newPath = normalizePath(pendingValue || "MOCData");
 					this.plugin.settings.dataFolder = newPath;
 					await this.plugin.saveSettings();
 					await renameDataFolder(oldPath, newPath);
@@ -62,16 +63,15 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 					const folderExists = await this.app.vault.adapter.exists(newPath);
 					if (!folderExists) {
 						await this.app.vault.createFolder(newPath);
-						//console.log("Created new data folder:", newPath);
 					}
 
-					//console.log("New data folder location:", newPath);
 					this.display();
 				});
 			});
 		// ---------------------------------
 
-	containerEl.createEl("h2", { text: "Style settings" });
+	// containerEl.createEl("h2", { text: "Style settings" });
+	new Setting(containerEl).setName('Style settings').setHeading();
 
 		// Toggle for opaque pins
 		new Setting(containerEl)

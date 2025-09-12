@@ -14,7 +14,7 @@ export default class MOCBlockPlugin extends Plugin {
 
 		// Ensure data folder exists
 		const dataFolderPath = this.settings.dataFolder;
-		const folder = this.app.vault.getAbstractFileByPath(dataFolderPath);
+		const folder = this.app.vault.getFolderByPath(dataFolderPath);
 		if (!folder) {
 			await this.app.vault.createFolder(dataFolderPath);
 			////console.log(`Created data folder: ${dataFolderPath}`);
@@ -77,7 +77,7 @@ export default class MOCBlockPlugin extends Plugin {
 					moc_id = `moc-${Math.random().toString(36).slice(2, 10)}`;
 					config.moc_id = moc_id;
 
-					const file = this.app.vault.getAbstractFileByPath(ctx.sourcePath);
+					const file = this.app.vault.getFileByPath(ctx.sourcePath);
 					if (!(file instanceof TFile)) return;
 
 					// get the block’s line positions
@@ -259,7 +259,7 @@ export default class MOCBlockPlugin extends Plugin {
 						document.body.classList.remove("mocblockRenderer-userselect-none");
 
 						// --- Save new width to the MOC block YAML ---
-						const file = this.app.vault.getAbstractFileByPath(ctx.sourcePath);
+						const file = this.app.vault.getFileByPath(ctx.sourcePath);
 						if (!(file instanceof TFile)) return;
 
 						const content = await this.app.vault.read(file);
@@ -342,12 +342,12 @@ export default class MOCBlockPlugin extends Plugin {
 
 		// Load marker data from JSON data file into 'markerData' object.
 			const markerFilePath = `${this.settings.dataFolder}/${moc_id}.md`;
-			let markerFile = this.app.vault.getAbstractFileByPath(markerFilePath);
+			let markerFile = this.app.vault.getFileByPath(markerFilePath);
 			if (!markerFile) {
 				const initialContent = "```json\n{\n  \"markers\": []\n}\n```";
 				await this.app.vault.create(markerFilePath, initialContent);
 				// Try to get the file again after creation
-				markerFile = this.app.vault.getAbstractFileByPath(markerFilePath);
+				markerFile = this.app.vault.getFileByPath(markerFilePath);
 			}
 			if (!markerFile) {
 				el.createEl("pre", { text: `Could not load marker data for ID: ${moc_id}` });
@@ -418,5 +418,9 @@ export default class MOCBlockPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	async onUnload() {
+
 	}
 }

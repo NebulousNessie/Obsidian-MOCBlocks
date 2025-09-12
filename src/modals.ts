@@ -85,7 +85,8 @@ export class NewPinModal extends Modal {
 		const { contentEl } = this;
 		contentEl.empty();
 
-		contentEl.createEl("h3", { text: "Add new pin" });
+		// contentEl.createEl("h3", { text: "Add new pin" });
+		new Setting(contentEl).setName('Add new pin').setHeading();
 
 		let selectedstyleName = Object.keys(this.styleNames)[0] || "Default";
 		let linkValue = "";
@@ -162,7 +163,8 @@ export class PinEditModal extends Modal {
 	onOpen() {
 		const { contentEl } = this;
 		contentEl.empty();
-		contentEl.createEl("h2", { text: "Edit marker" });
+		// contentEl.createEl("h2", { text: "Edit marker" });
+		new Setting(contentEl).setName('Edit marker').setHeading();
 
 
 			let linkValue = this.marker.link ?? "";
@@ -252,7 +254,8 @@ export class NewPolylineModal extends Modal {
 	onOpen() {
 		const { contentEl } = this;
 		contentEl.empty();
-		contentEl.createEl("h2", { text: "Add new polyline" });
+		// contentEl.createEl("h2", { text: "Add new polyline" });
+		new Setting(contentEl).setName('Add new polyline').setHeading();
 
 		let linkValue = "";
 		let selectedstyleName = Object.keys(this.styleNames)[0] || "Default";
@@ -329,7 +332,8 @@ export class PolylineEditModal extends Modal {
 	onOpen() {
 		const { contentEl } = this;
 		contentEl.empty();
-		contentEl.createEl("h2", { text: "Edit polyline" });
+		//contentEl.createEl("h2", { text: "Edit polyline" });
+		new Setting(contentEl).setName('Edit polyline').setHeading();
 
 		// Edit Link
 		let linkValue = this.marker.link ?? "";
@@ -406,7 +410,8 @@ export class NewMocBlockModal extends Modal {
 
   onOpen() {
     const { contentEl } = this;
-    contentEl.createEl("h2", { text: "New MOC Block" });
+    // contentEl.createEl("h2", { text: "New MOC Block" });
+	new Setting(contentEl).setName('New MOC Block').setHeading();
 
 	let imageLink = "";
 	let moc_id = `moc-${Math.random().toString(36).slice(2, 10)}`;

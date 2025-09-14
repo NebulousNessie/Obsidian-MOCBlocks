@@ -42,11 +42,6 @@
   z-index: 15;
   transition: background 0.2s;
 }
-.mocblockRenderer-polygon-preview {
-  stroke: var(--color-accent, #5b9aff);
-  stroke-width: 2;
-  fill: var(--interactive-accent-hover, rgba(90, 150, 255, 0.15));
-}
 .mocblockRenderer-resize-handle {
   position: absolute;
   top: 0;
@@ -67,14 +62,18 @@
 }
 
 /* Markers (pins, polylines) */
+svg.moc-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
 .mocblockRenderer-marker-pin {
 	position: absolute;
 	transform: translate(-50%, -50%);
 	cursor: pointer;
 	pointer-events: auto;
-}
-.mocblockRenderer-marker-polyline {
-	cursor: pointer;
 }
 .mocblockRenderer-marker-pin svg {
 	width: 20px;
@@ -83,6 +82,24 @@
 	pointer-events: auto;
 }
 
+.mocblockRenderer-marker-polyline {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+svg.moc-overlay polygon {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.mocblockRenderer-polygon-preview {
+  stroke: var(--color-accent, #5b9aff);
+  stroke-width: 2;
+  fill: var(--interactive-accent-hover, rgba(90, 150, 255, 0.15));
+  opacity: 0.5;
+}
 
 /* Action Buttons */
 .mocblockRenderer-actions-buttons {
@@ -105,9 +122,9 @@
   cursor: pointer;
   font-size: 12px;
 }
-.mocblockRenderer-container:hover .mocblockRenderer-actions-buttons {
+/* .mocblockRenderer-container:hover .mocblockRenderer-actions-buttons {
   opacity: 1;
-}
+} */
 
 
 /* Settings Tab */
@@ -126,6 +143,7 @@
   margin-top: 0.5em;
   border-left: 2px solid var(--background-modifier-border);
   padding-left: 1em;
+  display: none;
 }
 .mocblock-settings-style-row {
     display: flex;

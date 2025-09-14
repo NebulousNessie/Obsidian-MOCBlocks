@@ -31,7 +31,6 @@ export function addPinButton(
         const svgNS = "http://www.w3.org/2000/svg";	// SVG namespace
         const svg = document.createElementNS(svgNS, "svg");
         svg.classList.add("mocblockRenderer-overlay");
-        svg.style.pointerEvents = "none"; // allow clicks to pass to image
         container.appendChild(svg);
 
         // Disable the button while waiting (prevents duplicate listeners)
@@ -118,7 +117,6 @@ export function addPolylineButton(
 
         // Visual cues for editing: crosshair cursor and moc block outline.
         img.classList.add("mocblockRenderer-editing-outline");
-        // img.style.cursor = "crosshair";
 
         // disable buttons while waiting (prevents duplicate listeners)
         pinBtn.setAttribute("disabled", "true");
@@ -134,7 +132,6 @@ export function addPolylineButton(
     // Create SVG overlay exactly matching image dimensions
         const svg = document.createElementNS(svgNS, "svg");
         svg.classList.add("mocblockRenderer-overlay");
-        svg.style.pointerEvents = "none"; // allow clicks to pass to image
         container.appendChild(svg);
 
     // Click handler to add points
@@ -169,7 +166,7 @@ export function addPolylineButton(
                 points.map(([px, py]) => `${px * rect.width},${py * rect.height}`).join(" ")
             );
 
-            // Draw small dot at the point
+            // Draw small dot at each point
             const dot = document.createElementNS(svgNS, "circle");
             dot.setAttribute("cx", (percentX * rect.width).toString());
             dot.setAttribute("cy", (percentY * rect.height).toString());

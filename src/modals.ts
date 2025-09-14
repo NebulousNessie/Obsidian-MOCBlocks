@@ -1,4 +1,4 @@
-import { App, Modal, Setting, setIcon, TFile, SuggestModal, Notice} from "obsidian";
+import { App, Modal, Setting, setIcon, TFile, SuggestModal, Notice } from "obsidian";
 import { PinMarker, PolylineMarker } from "./helpers";
 import { styleNamesSetting } from "./settings";
 import { v4 as uuidv4 } from "uuid";

@@ -3,7 +3,7 @@ import { Plugin, TFile, MarkdownView, parseYaml } from "obsidian";
 import { loadMarkerDataMD, saveUpdatedMarker, refreshMOCBlock, deleteMarkerFromFile } from "./helpers";
 import { MOCBlockSettings, DEFAULT_SETTINGS, MOCBlockSettingTab } from "./settings";
 import { NewMocBlockModal } from "./modals";
-import { renderPinMarker, renderPolylineMarker } from "./renderMarkers";
+import { renderPinMarker, renderPolylineMarker, addResizeHandle } from "./blockRenderHelpers";
 import { addPinButton, addPolylineButton } from "./actionButtons";
 
 export default class MOCBlockPlugin extends Plugin {
@@ -16,8 +16,15 @@ export default class MOCBlockPlugin extends Plugin {
 		const dataFolderPath = this.settings.dataFolder;
 		const folder = this.app.vault.getFolderByPath(dataFolderPath);
 		if (!folder) {
-			await this.app.vault.createFolder(dataFolderPath);
-			////console.log(`Created data folder: ${dataFolderPath}`);
+			try {
+				await this.app.vault.createFolder(dataFolderPath);
+			} catch (e) {
+				if (!(e instanceof Error) || !e.message || !e.message.includes("Folder already exists")) {
+					console.error("Failed to create data folder:", e);
+					throw e;
+				}
+				// else: folder already exists, safe to ignore
+			}
 		}
 
 		this.addCommand({
@@ -157,144 +164,45 @@ export default class MOCBlockPlugin extends Plugin {
 			container.style.width = newWidth + "px";
 			container.style.maxWidth = newWidth + "px";
 
-
-			// Resizing handle
-			if (isEditMode) {
-				const resizeHandle = container.createDiv({ cls: "mocblockRenderer-resize-handle" });	// Render resize handle
-
-				let isResizing = false;
-				let startX = 0;
-				let startWidth = 0;
-				let pendingAnimation = false;
-				let latestEvent: MouseEvent | null = null;
-
-				resizeHandle.addEventListener("mousedown", (e) => {
-					e.preventDefault();
-					isResizing = true;
-					startX = e.clientX;
-					startWidth = img.offsetWidth;
-					document.body.classList.add("mocblockRenderer-userselect-none"); // prevent text selection while resizing
-				});
-
-				const handleResizeFrame = () => {
-					if (!isResizing || !latestEvent) {
-						pendingAnimation = false;
-						return;
-					}
-					const e = latestEvent;
-					const dx = e.clientX - startX;
-					const newWidth = Math.max(50, startWidth + dx); // minimum width 50px
-					img.style.width = newWidth + "px";
-					img.style.maxWidth = newWidth + "px";
-					container.style.width = newWidth + "px";
-					container.style.maxWidth = newWidth + "px";
-
-					// For future use when attr(data-width px) becomes usable, instead of inline styles. Use corresponding css in styles.css.
-						// const newWidth = Math.max(50, startWidth + dx);
-						// container.setAttr("data-width", newWidth);
-						// img.setAttr("data-width", newWidth);
-						// container.addClass("has-width");
-						// img.addClass("has-width");
-
-					// Remove old markers (pins and polylines)
-					container.querySelectorAll(".mocblockRenderer-marker-pin, .mocblockRenderer-marker-polyline, svg.moc-overlay").forEach(el => el.remove());
-
-					// Re-render all markers
-					if (markerData && markerData.markers) {
-						for (const marker of markerData.markers) {
-							if (marker.type === "pin") {
-								renderPinMarker(
-									marker, 
-									container, 
-									img, 
-									this.settings, 
-									isEditMode, 
-									ctx, 
-									this.app, 
-									moc_id, 
-									markerFile, 
-									source, 
-									el, 
-									refreshMOCBlock, 
-									saveUpdatedMarker, 
-									deleteMarkerFromFile
-								);
-							}
-							if (marker.type === "polyline") {
-								renderPolylineMarker(
-									marker, 
-									container, 
-									img, 
-									this.settings, 
-									isEditMode, 
-									ctx, 
-									this.app, 
-									moc_id, 
-									markerFile, 
-									source, 
-									el, 
-									refreshMOCBlock, 
-									saveUpdatedMarker, 
-									deleteMarkerFromFile
-								);
-							}
-						}
-					}
-					pendingAnimation = false;
-				}
-
-				window.addEventListener("mousemove", (e) => {
-					if (!isResizing) return;
-					latestEvent = e;
-					if (!pendingAnimation) {
-						pendingAnimation = true;
-						requestAnimationFrame(handleResizeFrame);
-					}
-				});
-
-				window.addEventListener("mouseup", async () => {
-					if (isResizing) {
-						isResizing = false;
-						// document.body.style.userSelect = "";
-						document.body.classList.remove("mocblockRenderer-userselect-none");
-
-						// --- Save new width to the MOC block YAML ---
-						const file = this.app.vault.getFileByPath(ctx.sourcePath);
-						if (!(file instanceof TFile)) return;
-
-						const content = await this.app.vault.read(file);
-						const section = ctx.getSectionInfo(el);
-						if (!section) return;
-
-						// Find the code block lines
-						const lines = content.split("\n");
-						const blockLines = lines.slice(section.lineStart + 1, section.lineEnd);
-
-						// Update or add image_width in the block YAML
-						let found = false;
-						for (let i = 0; i < blockLines.length; i++) {
-							if (blockLines[i].trim().startsWith("image_width:")) {
-								blockLines[i] = `image_width: ${img.offsetWidth}`;
-								found = true;
-								break;
-							}
-						}
-						if (!found) {
-							blockLines.push(`image_width: ${img.offsetWidth}`);
-						}
-
-						// Rebuild the code block and file content
-						const newBlock = ["```moc", ...blockLines, "```"].join("\n");
-						const newContent = [
-							...lines.slice(0, section.lineStart),
-							newBlock,
-							...lines.slice(section.lineEnd + 1),
-						].join("\n");
-
-						await this.app.vault.modify(file, newContent);
-					}
-				});
+			// Load marker data from JSON data file into 'markerData' object.
+			const markerFilePath = `${this.settings.dataFolder}/${moc_id}.md`;
+			let markerFile = this.app.vault.getFileByPath(markerFilePath);
+			if (!markerFile) {
+				const initialContent = "```json\n{\n  \"markers\": []\n}\n```";
+				await this.app.vault.create(markerFilePath, initialContent);
+				// Try to get the file again after creation
+				markerFile = this.app.vault.getFileByPath(markerFilePath);
 			}
+			if (!markerFile) {
+				el.createEl("pre", { text: `Could not load marker data for ID: ${moc_id}` });
+				el.createEl("pre", { text: `Could not create marker file: ${markerFilePath}` });
+				return;
+			}
+			const markerData = await loadMarkerDataMD(this.app.vault, markerFile.path);
+
+			if (!markerData) {
+				el.createEl("pre", { text: `Could not load marker data for ID: ${moc_id}` });
+				return;
+			}
+			// --------------------------------
+
+			addResizeHandle(
+				container,
+				img,
+				isEditMode,
+				markerData,
+				this.settings,
+				ctx,
+				this.app,
+				moc_id,
+				markerFile,
+				source,
+				el,
+				refreshMOCBlock,
+				saveUpdatedMarker,
+				deleteMarkerFromFile
+			);
+
 			// --------------------------------
 
 
@@ -337,29 +245,6 @@ export default class MOCBlockPlugin extends Plugin {
 				);
 			}
 			//--------------------------------
-		// --------------------------------
-
-
-		// Load marker data from JSON data file into 'markerData' object.
-			const markerFilePath = `${this.settings.dataFolder}/${moc_id}.md`;
-			let markerFile = this.app.vault.getFileByPath(markerFilePath);
-			if (!markerFile) {
-				const initialContent = "```json\n{\n  \"markers\": []\n}\n```";
-				await this.app.vault.create(markerFilePath, initialContent);
-				// Try to get the file again after creation
-				markerFile = this.app.vault.getFileByPath(markerFilePath);
-			}
-			if (!markerFile) {
-				el.createEl("pre", { text: `Could not load marker data for ID: ${moc_id}` });
-				el.createEl("pre", { text: `Could not create marker file: ${markerFilePath}` });
-				return;
-			}
-			const markerData = await loadMarkerDataMD(this.app.vault, markerFile.path);
-
-			if (!markerData) {
-				el.createEl("pre", { text: `Could not load marker data for ID: ${moc_id}` });
-				return;
-			}
 		// --------------------------------
 
 

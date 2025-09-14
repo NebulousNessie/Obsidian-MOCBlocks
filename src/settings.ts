@@ -98,15 +98,12 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 				text: "▼",
 				cls: "mocblock-settings-style-toggle"
 			});
-			// toggleBtn.style.marginRight = "0.7em";
 
 			// Style name (always visible)
 			const styleNameEl = row.createEl("span", { text: styleName, cls: "mocblock-settings-style-title" });
-			// styleNameEl.style.fontWeight = "bold";
 
 			// Details div (hidden by default)
 			const detailsDiv = containerEl.createDiv({ cls: "mocblock-settings-style-details" });
-			detailsDiv.style.display = "none";
 
 			// Icon dropdown
 			new Setting(detailsDiv)

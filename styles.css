@@ -6,7 +6,7 @@
   position: relative;
   display: inline-block;
   box-sizing: border-box;
-  cursor: default;
+  cursor: default !important;
   background:rgba(255, 255, 255, 0)
 }
 .mocblockRenderer-container img {
@@ -38,7 +38,7 @@
   width: 100%;
   height: 100%;
   border-radius: 6px;
-  pointer-events: none;
+  pointer-events: none  !important;
   z-index: 15;
   transition: background 0.2s;
 }
@@ -49,7 +49,7 @@
   width: 8px;
   height: 50%;
   margin-top: 25%;
-  cursor: ew-resize;
+  cursor: ew-resize !important;
   background: var(--background-modifier-hover, rgba(200,200,200,0.25));
   border-radius: 8px;
   z-index: 20;
@@ -66,20 +66,20 @@ svg.moc-overlay {
   position: absolute;
   left: 0;
   top: 0;
-  pointer-events: none;
+  pointer-events: none  !important;
 }
 
 .mocblockRenderer-marker-pin {
 	position: absolute;
 	transform: translate(-50%, -50%);
-	cursor: pointer;
-	pointer-events: auto;
+	cursor: pointer !important;
+	pointer-events: auto !important;
 }
 .mocblockRenderer-marker-pin svg {
 	width: 20px;
 	height: 20px;
 	fill: var(--text-normal);
-	pointer-events: auto;
+	pointer-events: auto  !important;
 }
 
 .mocblockRenderer-marker-polyline {
@@ -88,11 +88,11 @@ svg.moc-overlay {
   top: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
+  pointer-events: none !important;
 }
 svg.moc-overlay polygon {
-  pointer-events: auto;
-  cursor: pointer;
+  pointer-events: auto !important;
+  cursor: pointer !important;
 }
 .mocblockRenderer-polygon-preview {
   stroke: var(--color-accent, #5b9aff);
@@ -132,7 +132,7 @@ svg.moc-overlay polygon {
 /* Styles */
 .mocblock-settings-style-toggle {
   margin-right: 0.5em;
-  cursor: pointer;
+  cursor: pointer !important;
   background: var(--background-secondary);
   border: 1px solid var(--background-modifier-border);
   font-size: 1em;

@@ -7,7 +7,7 @@ import { renderPinMarker, renderPolylineMarker, addResizeHandle } from "./blockR
 import { addPinButton, addPolylineButton } from "./actionButtons";
 
 export default class MOCBlockPlugin extends Plugin {
-	settings: MOCBlockSettings;
+	settings!: MOCBlockSettings;
 	async onload() {
 		await this.loadSettings();
 		this.addSettingTab(new MOCBlockSettingTab(this.app, this));

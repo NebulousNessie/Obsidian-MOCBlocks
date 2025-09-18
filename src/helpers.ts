@@ -6,6 +6,7 @@ export interface BaseMarker {
   styleName: string;
 }
 
+
 export interface PinMarker extends BaseMarker {
   x: number;
   y: number;
@@ -23,36 +24,35 @@ export interface MarkerData {
 	markers: Marker[];
 }
 
-// Read the first ```json block from a .md file
 export async function loadMarkerDataMD(
-	vault: Vault,
-	path: string
+  vault: Vault,
+  path: string
 ): Promise<MarkerData | null> {
-	const file = vault.getAbstractFileByPath(path);
-	if (!(file instanceof TFile)) {
-		console.warn(`📁 Marker file not found: ${path}`);
-		return null;
-	}
+  // const { fileName } = parseObsidianLink(path);
+  const file = vault.getAbstractFileByPath(path);
+  if (!(file instanceof TFile)) {
+    console.warn(`📁 Marker file not found: ${path}`);
+    return null;
+  }
 
-	try {
-		const content = await vault.read(file);
-		const jsonMatch = content.match(/```json\s*([\s\S]*?)```/);
-		if (!jsonMatch) {
-			console.warn(`❌ No JSON block in ${path}`);
-			return null;
-		}
+  try {
+    const content = await vault.read(file);
+    const jsonMatch = content.match(/```json\s*([\s\S]*?)```/);
+    if (!jsonMatch) {
+      console.warn(`❌ No JSON block in ${path}`);
+      return null;
+    }
 
-		const json = JSON.parse(jsonMatch[1]);
-		if (!Array.isArray(json.markers)) {
-			throw new Error("Missing or invalid 'markers' array.");
-		}
+    const json = JSON.parse(jsonMatch[1]);
+    if (!Array.isArray(json.markers)) {
+      throw new Error("Missing or invalid 'markers' array.");
+    }
 
-		//console.log(`📌 Loaded ${json.markers.length} markers from ${path}`);
-		return json;
-	} catch (err) {
-		console.error(`❌ Failed to load marker data from ${path}:`, err);
-		return null;
-	}
+    return json;
+  } catch (err) {
+    console.error(`❌ Failed to load marker data from ${path}:`, err);
+    return null;
+  }
 }
 
 export async function saveUpdatedMarker(
@@ -60,6 +60,7 @@ export async function saveUpdatedMarker(
   path: string,
   updatedMarker: Marker
 ): Promise<void> {
+  // const { fileName } = parseObsidianLink(path);
   const file = vault.getAbstractFileByPath(path);
   if (!(file instanceof TFile)) return;
 
@@ -96,6 +97,7 @@ export async function addMarkerToFile(
   path: string,
   newMarker: Marker
 ): Promise<void> {
+  // const { fileName } = parseObsidianLink(path);
   const file = vault.getAbstractFileByPath(path);
   if (!(file instanceof TFile)) throw new Error(`File not found: ${path}`);
 
@@ -163,7 +165,7 @@ export async function deleteMarkerFromFile(
   //console.log("🗑️ Marker deleted:", markerId);
 }
 
-export async function renameDataFolder(oldPath: string, newPath: string) {
+export async function renameDataFolder(this: { app: App }, oldPath: string, newPath: string) {
 	const oldFolder = this.app.vault.getAbstractFileByPath(oldPath);
 	const newFolder = this.app.vault.getAbstractFileByPath(newPath);
 	if (oldFolder && oldPath !== newPath) {
@@ -175,3 +177,15 @@ export async function renameDataFolder(oldPath: string, newPath: string) {
 		await this.app.fileManager.renameFile(oldFolder, newPath);
 	}
 }
+
+// export function parseObsidianLink(link: string): { fileName: string; heading?: string } {
+//   // Remove brackets
+//   let clean = link.trim();
+//   if (clean.startsWith("[[") && clean.endsWith("]]")) {
+//     clean = clean.slice(2, -2);
+//   }
+//   // Split by first '#': get the heading
+//   const [fileName, ...headingParts] = clean.split("#");
+//   const heading = headingParts.length > 0 ? headingParts.join("#") : undefined;
+//   return { fileName: fileName.trim(), heading: heading?.trim() };
+// }

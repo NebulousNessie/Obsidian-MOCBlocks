@@ -4,29 +4,134 @@ import { styleNamesSetting } from "./settings";
 import { v4 as uuidv4 } from "uuid";
 
 
-class LinkSuggestModal extends SuggestModal<TFile> {
-    onChoose: (file: TFile) => void;
+// class LinkSuggestModal extends SuggestModal<TFile> {
+//     onChoose: (file: TFile) => void;
 
-    constructor(app: App, onChoose: (file: TFile) => void) {
-        super(app);
-        this.onChoose = onChoose;
-        this.setPlaceholder("Type to search for a note...");
-    }
+//     constructor(app: App, onChoose: (file: TFile) => void) {
+//         super(app);
+//         this.onChoose = onChoose;
+//         this.setPlaceholder("Type to search for a note...");
+//     }
 
-    getSuggestions(query: string): TFile[] {
-        return this.app.vault.getMarkdownFiles().filter(file =>
-            file.basename.toLowerCase().includes(query.toLowerCase())
-        );
-    }
+//     getSuggestions(query: string): TFile[] {
+//         return this.app.vault.getMarkdownFiles().filter(file =>
+//             file.basename.toLowerCase().includes(query.toLowerCase())
+//         );
+//     }
 
-    renderSuggestion(file: TFile, el: HTMLElement) {
-        el.setText(file.basename);
-    }
+//     renderSuggestion(file: TFile, el: HTMLElement) {
+//         el.setText(file.basename);
+//     }
 
-    onChooseSuggestion(file: TFile) {
-        this.onChoose(file);
-    }
+//     onChooseSuggestion(file: TFile) {
+//         this.onChoose(file);
+//     }
+// }
+
+// type LinkSuggestion = { file: TFile; heading?: string };
+// class LinkSuggestModal extends SuggestModal<LinkSuggestion> {
+// 	onChoose: (file: TFile, heading?: string) => void;
+
+// 	constructor(app: App, onChoose: (file: TFile, heading?: string) => void) {
+// 		super(app);
+// 		this.onChoose = onChoose;
+// 		this.setPlaceholder("Type to search for a note or subheading...");
+// 	}
+
+// 	async getSuggestions(query: string): Promise<LinkSuggestion[]> {
+// 		const files = this.app.vault.getMarkdownFiles();
+// 		const lowerQuery = query.toLowerCase();
+// 		const suggestions: LinkSuggestion[] = [];
+// 		for (const file of files) {
+// 			if (file.basename.toLowerCase().includes(lowerQuery)) {
+// 				suggestions.push({ file });
+// 			}
+// 			// Read file for headings
+// 			try {
+// 				const content = await this.app.vault.read(file);
+// 				const lines = content.split(/\r?\n/);
+// 				for (const line of lines) {
+// 					const headingMatch = line.match(/^(#+)\s+(.*)/);
+// 					if (headingMatch) {
+// 						const headingText = headingMatch[2].trim();
+// 						if (headingText && headingText.toLowerCase().includes(lowerQuery)) {
+// 							suggestions.push({ file, heading: headingText });
+// 						}
+// 					}
+// 				}
+// 			} catch (e) {
+// 				// ignore file read errors
+// 			}
+// 		}
+// 		return suggestions;
+// 	}
+
+// 	renderSuggestion(suggestion: LinkSuggestion, el: HTMLElement) {
+// 		if (suggestion.heading) {
+// 			el.createEl("div", { text: `${suggestion.file.basename} > ${suggestion.heading}` });
+// 		} else {
+// 			el.createEl("div", { text: suggestion.file.basename });
+// 		}
+// 	}
+
+// 	onChooseSuggestion(suggestion: LinkSuggestion) {
+// 		this.onChoose(suggestion.file, suggestion.heading);
+// 	}
+// }
+
+type LinkSuggestion = { file: TFile; heading?: string };
+
+class LinkSuggestModal extends SuggestModal<LinkSuggestion> {
+	onChoose: (file: TFile, heading?: string) => void;
+
+	constructor(app: App, onChoose: (file: TFile, heading?: string) => void) {
+		super(app);
+		this.onChoose = onChoose;
+		this.setPlaceholder("Type to search for a note or heading...");
+	}
+
+	getSuggestions(query: string): LinkSuggestion[] {
+		const files = this.app.vault.getMarkdownFiles();
+		const lowerQuery = query.toLowerCase();
+		const suggestions: LinkSuggestion[] = [];
+
+		for (const file of files) {
+			const fileName = file.basename.toLowerCase();
+
+			// Match file by name
+			if (fileName.includes(lowerQuery)) {
+				suggestions.push({ file });
+			}
+
+			// Match headings from metadata cache
+			const cache = this.app.metadataCache.getFileCache(file);
+			if (cache?.headings) {
+				for (const h of cache.headings) {
+					if (h.heading.toLowerCase().includes(lowerQuery) || fileName.includes(lowerQuery)) {
+						suggestions.push({ file, heading: h.heading });
+					}
+				}
+			}
+		}
+
+		return suggestions;
+	}
+
+	renderSuggestion(suggestion: LinkSuggestion, el: HTMLElement) {
+		if (suggestion.heading) {
+			const container = el.createDiv({ cls: "link-suggest-heading" });
+			container.createEl("div", { text: suggestion.file.basename, cls: "suggestion-title" });
+			container.createEl("div", { text: `#${suggestion.heading}`, cls: "suggestion-subtitle" });
+		} else {
+			el.createEl("div", { text: suggestion.file.basename, cls: "suggestion-title" });
+		}
+	}
+
+	onChooseSuggestion(suggestion: LinkSuggestion) {
+		this.onChoose(suggestion.file, suggestion.heading);
+	}
 }
+
 
 class ImageSuggestModal extends SuggestModal<TFile> {
   onChoose: (file: TFile) => void;
@@ -96,8 +201,12 @@ export class NewPinModal extends Modal {
 		.addButton(btn => {
 			btn.setButtonText(linkValue ? linkValue : "Add note link");
 			btn.onClick(() => {
-				new LinkSuggestModal(this.app, (file) => {
-					linkValue = `[[${file.basename}]]`;
+				new LinkSuggestModal(this.app, (file, heading) => {
+					if (heading) {
+						linkValue = `[[${file.basename}#${heading}]]`;
+					} else {
+						linkValue = `[[${file.basename}]]`;
+					}
 					btn.setButtonText(linkValue);
 				}).open();
 			});
@@ -173,10 +282,16 @@ export class PinEditModal extends Modal {
 			.addButton(btn => {
 				btn.setButtonText(linkValue ? linkValue : "Change note link");
 				btn.onClick(() => {
-					new LinkSuggestModal(this.app, (file) => {
-						linkValue = `[[${file.basename}]]`;
+				new LinkSuggestModal(this.app, (file, heading) => {
+						if (heading) {
+							linkValue = `[[${file.basename}#${heading}]]`;
+						} else {
+							linkValue = `[[${file.basename}]]`;
+						}
 						btn.setButtonText(linkValue);
 					}).open();
+
+					
 				});
 			});
 
@@ -265,10 +380,15 @@ export class NewPolylineModal extends Modal {
 		.addButton(btn => {
 				btn.setButtonText(linkValue ? linkValue : "Add note link");
 				btn.onClick(() => {
-					new LinkSuggestModal(this.app, (file) => {
-						linkValue = `[[${file.basename}]]`;
+				new LinkSuggestModal(this.app, (file, heading) => {
+						if (heading) {
+							linkValue = `[[${file.basename}#${heading}]]`;
+						} else {
+							linkValue = `[[${file.basename}]]`;
+						}
 						btn.setButtonText(linkValue);
 					}).open();
+
 				});
 			});
 
@@ -342,10 +462,15 @@ export class PolylineEditModal extends Modal {
 			.addButton((btn) => {
 				btn.setButtonText(linkValue ? linkValue : "Change note link");
 				btn.onClick(() => {
-					new LinkSuggestModal(this.app, (file) => {
-						linkValue = `[[${file.basename}]]`;
+				new LinkSuggestModal(this.app, (file, heading) => {
+						if (heading) {
+							linkValue = `[[${file.basename}#${heading}]]`;
+						} else {
+							linkValue = `[[${file.basename}]]`;
+						}
 						btn.setButtonText(linkValue);
 					}).open();
+
 				});
 			});
 

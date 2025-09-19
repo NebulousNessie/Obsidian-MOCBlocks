@@ -1,6 +1,6 @@
 import { TFile } from "obsidian";
 
-import { PinMarker, PolylineMarker} from "./helpers";
+import { PinMarker, PolylineMarker, getCodeBlockContainer } from "./helpers";
 import { MOCBlockSettings } from "./settings";
 import { getIconSVG } from "./icons";
 import { PinEditModal, PolylineEditModal } from "./modals";
@@ -319,7 +319,19 @@ export function addResizeHandle(
         }
         const e = latestEvent;
         const dx = e.clientX - startX;
-        const newWidth = Math.max(50, startWidth + dx);
+
+        const codeBlockContainer = getCodeBlockContainer(container);
+        let maxWidth = Infinity;
+        if (codeBlockContainer) {
+            maxWidth = codeBlockContainer.getBoundingClientRect().width;
+        }
+
+        let newWidth = Math.max(50, startWidth + dx);
+        if (isFinite(maxWidth)) {
+            newWidth = Math.min(newWidth, maxWidth);
+        }
+
+        // const newWidth = Math.max(50, startWidth + dx);
         img.style.width = newWidth + "px";
         img.style.maxWidth = newWidth + "px";
         container.style.width = newWidth + "px";

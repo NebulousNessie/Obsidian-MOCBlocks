@@ -178,14 +178,18 @@ export async function renameDataFolder(this: { app: App }, oldPath: string, newP
 	}
 }
 
-// export function parseObsidianLink(link: string): { fileName: string; heading?: string } {
-//   // Remove brackets
-//   let clean = link.trim();
-//   if (clean.startsWith("[[") && clean.endsWith("]]")) {
-//     clean = clean.slice(2, -2);
-//   }
-//   // Split by first '#': get the heading
-//   const [fileName, ...headingParts] = clean.split("#");
-//   const heading = headingParts.length > 0 ? headingParts.join("#") : undefined;
-//   return { fileName: fileName.trim(), heading: heading?.trim() };
-// }
+export function getCodeBlockContainer(container: HTMLElement): HTMLElement | null {
+    let el: HTMLElement | null = container;
+    while (el) {
+        if (
+            el.classList.contains("cm-preview-code-block") &&
+            el.classList.contains("cm-embed-block") &&
+            el.classList.contains("markdown-rendered") &&
+            el.classList.contains("cm-lang-moc")
+        ) {
+            return el;
+        }
+        el = el.parentElement;
+    }
+    return null;
+}

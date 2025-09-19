@@ -11,10 +11,12 @@
 }
 .mocblockRenderer-container img {
   display: block;
+  width: 100%;
   height: auto;
   border: 1px solid #333;
   border-radius: 8px;
   transition: width 0.15s cubic-bezier(.4,0,.2,1);
+  cursor: default !important;
 }
 .mocblockRenderer-userselect-none {
   user-select: none !important;
@@ -109,12 +111,11 @@ svg.moc-overlay polygon {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  opacity: 1;
+  opacity: 0.75;
   transition: opacity 0.2s;
-  cursor: pointer;
 }
 .mocblockRenderer-actions-buttons button {
-  background: var(--background-modifier-hover, rgba(0,0,0,0.6));
+  background: var(--background-modifier-active-hover, rgba(0, 0, 0, 0.9));
   color: var(--text-on-accent, white);
   border: none;
   border-radius: 4px;
@@ -122,14 +123,16 @@ svg.moc-overlay polygon {
   cursor: pointer;
   font-size: 12px;
 }
-/* .mocblockRenderer-container:hover .mocblockRenderer-actions-buttons {
+.mocblockRenderer-actions-buttons button:hover {
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
   opacity: 1;
-} */
+}
 
 
 /* Settings Tab */
 
-/* Styles */
+/* Marker Styles */
 .mocblock-settings-style-toggle {
   margin-right: 0.5em;
   cursor: pointer !important;

@@ -71,7 +71,7 @@ export function addPinButton(
                 percentY,
                 async (newMarker) => {
                     await addMarkerToFile(app.vault, markerFilePath, newMarker);
-                    await refreshMOCBlock(app, source, el, ctx);
+                    await refreshMOCBlock(app, source, el, ctx, parentComponent);
                     app.workspace.trigger("markdown-code-block-processed");
                 },
                 cleanup // call cleanup on cancel
@@ -223,7 +223,7 @@ export function addPolylineButton(
                     newMarker.type = "polyline";
                     newMarker.points = points; // normalized percentages, for scaling
                     await addMarkerToFile(app.vault, markerFilePath, newMarker);
-                    await refreshMOCBlock(app, source, el, ctx);
+                    await refreshMOCBlock(app, source, el, ctx, parentComponent);
                     app.workspace.trigger("markdown-code-block-processed");
                 },
                 cleanup // call cleanup on cancel

@@ -163,7 +163,7 @@ export async function deleteMarkerFromFile(
   //console.log("🗑️ Marker deleted:", markerId);
 }
 
-export async function renameDataFolder(this: { app: App }, oldPath: string, newPath: string) {
+export async function renameDataFolder(app: App, oldPath: string, newPath: string) {
 	const oldFolder = app.vault.getAbstractFileByPath(oldPath);
 	const newFolder = app.vault.getAbstractFileByPath(newPath);
 	if (oldFolder && oldPath !== newPath) {

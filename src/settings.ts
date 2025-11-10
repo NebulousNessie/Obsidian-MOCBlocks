@@ -33,6 +33,12 @@ export const DEFAULT_SETTINGS: MOCBlockSettings = {
 
 export class MOCBlockSettingTab extends PluginSettingTab {
 	plugin: MOCBlockPlugin;
+
+	constructor(app: App, plugin: MOCBlockPlugin) {
+		super(app, plugin);
+		this.plugin = plugin;
+	}
+
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
@@ -57,7 +63,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 					const newPath = normalizePath(pendingValue || "MOCData");
 					this.plugin.settings.dataFolder = newPath;
 					await this.plugin.saveSettings();
-					await renameDataFolder(oldPath, newPath);
+					await renameDataFolder(this.app, oldPath, newPath);
 
 					// Create the folder if it doesn't exist
 					const folderExists = await this.app.vault.adapter.exists(newPath);

@@ -88,7 +88,7 @@ export async function saveUpdatedMarker(
     "```json\n" + JSON.stringify(markerData, null, 2) + "\n```";
   const newContent = content.replace(/```json\s*[\s\S]*?```/, newJson);
 
-  await vault.modify(file, newContent);
+  await vault.process(file, () => newContent);
   //console.log("📝 Marker updated and saved to file:", updatedMarker);
 }
 
@@ -114,7 +114,7 @@ export async function addMarkerToFile(
     "```json\n" + JSON.stringify(json, null, 2) + "\n```";
   const newContent = content.replace(/```json\s*[\s\S]*?```/, updatedJsonBlock);
 
-  await vault.modify(file, newContent);
+  await vault.process(file, () => newContent);
   //console.log("Marker added:", newMarker);
 }
 
@@ -122,22 +122,20 @@ export async function refreshMOCBlock(
 	app: App,
 	source: string,
 	el: HTMLElement,
-	ctx: MarkdownPostProcessorContext
-) {
+	ctx: MarkdownPostProcessorContext,
+  parentComponent: Component
+): Promise<void> {
 	// Clear the existing block content
 	el.empty();
 
-    // Create a temporary Component for rendering
-    const tempComponent = new Component();
-
-	// Re-run the code block's processing logic
-	await MarkdownRenderer.renderMarkdown(
-		"```moc\n" + source + "\n```", // simulate block
-		el,
-		ctx.sourcePath,
-		//ctx
-		tempComponent // passing temp Component instead of ctx to avoid issues
-	);
+  // Re-run the code block's processing logic
+  await MarkdownRenderer.render(
+    app,
+    "```moc\n" + source + "\n```", // simulate block
+    el,
+    ctx.sourcePath,
+    parentComponent
+  );
 }
 
 export async function deleteMarkerFromFile(
@@ -161,7 +159,7 @@ export async function deleteMarkerFromFile(
   const newJson = "```json\n" + JSON.stringify(markerData, null, 2) + "\n```";
   const newContent = content.replace(/```json\s*[\s\S]*?```/, newJson);
 
-  await vault.modify(tfile, newContent);
+  await vault.process(tfile, () => newContent);
   //console.log("🗑️ Marker deleted:", markerId);
 }
 

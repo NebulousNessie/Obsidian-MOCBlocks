@@ -1,3 +1,4 @@
+import { Component } from "obsidian";
 import { NewPinModal, NewPolylineModal } from "./modals";
 import { addMarkerToFile, refreshMOCBlock } from "./helpers";
 import { PolylineMarker } from "./helpers";
@@ -13,7 +14,8 @@ export function addPinButton(
     source: string,
     el: HTMLElement,
     ctx: any,
-    markerFilePath: string
+    markerFilePath: string,
+    parentComponent: Component
 ) {
     pinBtn.addEventListener("click", () => {
 
@@ -111,7 +113,8 @@ export function addPolylineButton(
     source: string,
     el: HTMLElement,
     ctx: any,
-    markerFilePath: string
+    markerFilePath: string,
+    parentComponent: Component
 ) {
     polyBtn.addEventListener("click", () => {
 

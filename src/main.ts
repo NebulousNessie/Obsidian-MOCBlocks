@@ -1,4 +1,4 @@
-import { Plugin, TFile, MarkdownView, parseYaml } from "obsidian";
+import { Plugin, TFile, MarkdownView, parseYaml, Component } from "obsidian";
 
 import { loadMarkerDataMD, saveUpdatedMarker, refreshMOCBlock, deleteMarkerFromFile } from "./helpers";
 import { MOCBlockSettings, DEFAULT_SETTINGS, MOCBlockSettingTab } from "./settings";
@@ -50,6 +50,8 @@ export default class MOCBlockPlugin extends Plugin {
 		//console.log("Current MOC plugin settings:", this.settings);
 
 		this.registerMarkdownCodeBlockProcessor("moc", async (source, el, ctx) => {
+            const mocBlockComponent = new Component();
+            this.addChild(mocBlockComponent);
 			//console.log("Processing MOC block:", source);
 
 			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
@@ -103,7 +105,7 @@ export default class MOCBlockPlugin extends Plugin {
 					...lines.slice(section.lineEnd + 1),
 					].join("\n");
 
-					await this.app.vault.modify(file, newContent);
+					await this.app.vault.process(file, () => newContent);
 				}
 
 				// moc_id config defined in check if statement above.
@@ -198,7 +200,7 @@ export default class MOCBlockPlugin extends Plugin {
 				markerFile,
 				source,
 				el,
-				refreshMOCBlock,
+				(source: string, el: HTMLElement, ctx: any) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent),
 				saveUpdatedMarker,
 				deleteMarkerFromFile
 			);
@@ -227,7 +229,8 @@ export default class MOCBlockPlugin extends Plugin {
 					source,
 					el,
 					ctx,
-					markerFilePath
+					markerFilePath,
+					mocBlockComponent
 				);
 
 				// Render Polyline Button, add event listeners
@@ -241,7 +244,8 @@ export default class MOCBlockPlugin extends Plugin {
 					source,
 					el,
 					ctx,
-					markerFilePath
+					markerFilePath,
+					mocBlockComponent
 				);
 			}
 			//--------------------------------
@@ -265,7 +269,7 @@ export default class MOCBlockPlugin extends Plugin {
 						markerFile, 
 						source, 
 						el, 
-						refreshMOCBlock, 
+						(source: string, el: HTMLElement, ctx: any) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent), 
 						saveUpdatedMarker, 
 						deleteMarkerFromFile
 					);
@@ -285,7 +289,7 @@ export default class MOCBlockPlugin extends Plugin {
 						markerFile, 
 						source, 
 						el, 
-						refreshMOCBlock, 
+						(source: string, el: HTMLElement, ctx: any) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent), 
 						saveUpdatedMarker, 
 						deleteMarkerFromFile
 					);
@@ -305,7 +309,7 @@ export default class MOCBlockPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	async onUnload() {
+	async onunload() {
 
 	}
 }

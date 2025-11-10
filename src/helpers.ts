@@ -164,15 +164,15 @@ export async function deleteMarkerFromFile(
 }
 
 export async function renameDataFolder(this: { app: App }, oldPath: string, newPath: string) {
-	const oldFolder = this.app.vault.getAbstractFileByPath(oldPath);
-	const newFolder = this.app.vault.getAbstractFileByPath(newPath);
+	const oldFolder = app.vault.getAbstractFileByPath(oldPath);
+	const newFolder = app.vault.getAbstractFileByPath(newPath);
 	if (oldFolder && oldPath !== newPath) {
 		if (newFolder) {
 			//console.log("Destination folder already exists, cannot rename.");
 			new Notice(`Destination folder "${newPath}" already exists.`);
 			return;
 		}
-		await this.app.fileManager.renameFile(oldFolder, newPath);
+		await app.fileManager.renameFile(oldFolder, newPath);
 	}
 }
 

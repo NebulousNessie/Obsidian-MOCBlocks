@@ -65,14 +65,14 @@ export function addPinButton(
 
             // Open modal with coordinates
             const newPinModal = new NewPinModal(
-                this.app,
+                app,
                 settings.styleNames,
                 percentX,
                 percentY,
                 async (newMarker) => {
-                    await addMarkerToFile(this.app.vault, markerFilePath, newMarker);
-                    await refreshMOCBlock(this.app, source, el, ctx);
-                    this.app.workspace.trigger("markdown-code-block-processed");
+                    await addMarkerToFile(app.vault, markerFilePath, newMarker);
+                    await refreshMOCBlock(app, source, el, ctx);
+                    app.workspace.trigger("markdown-code-block-processed");
                 },
                 cleanup // call cleanup on cancel
             );
@@ -216,15 +216,15 @@ export function addPolylineButton(
 
             // Open modal
             const newPolylineModal = new NewPolylineModal(
-                this.app,
+                app,
                 points,
                 settings.styleNames,
                 async (newMarker: PolylineMarker) => {
                     newMarker.type = "polyline";
                     newMarker.points = points; // normalized percentages, for scaling
-                    await addMarkerToFile(this.app.vault, markerFilePath, newMarker);
-                    await refreshMOCBlock(this.app, source, el, ctx);
-                    this.app.workspace.trigger("markdown-code-block-processed");
+                    await addMarkerToFile(app.vault, markerFilePath, newMarker);
+                    await refreshMOCBlock(app, source, el, ctx);
+                    app.workspace.trigger("markdown-code-block-processed");
                 },
                 cleanup // call cleanup on cancel
             );

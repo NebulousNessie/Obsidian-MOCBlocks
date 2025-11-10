@@ -78,7 +78,7 @@ export function renderPinMarker(
                                             evt.stopPropagation();
                                             const linkTarget = pin.link?.replace(/^\[\[|\]\]$/g, '') ?? null;
                                             if (linkTarget) {
-                                                this.app.workspace.openLinkText(linkTarget, ctx.sourcePath);
+                                                app.workspace.openLinkText(linkTarget, ctx.sourcePath);
                                             }
                                         });
                                     //--------------------------------
@@ -91,25 +91,25 @@ export function renderPinMarker(
     
                                             //console.log(`🛠️ Opening edit modal for marker: ${pin.markerId}`);
                                             const modal = new PinEditModal(
-                                                this.app, 
+                                                app, 
                                                 pin, 
                                                 settings.styleNames, 
                                                 async (updated) => {
                                                     pin.styleName = updated.styleName;
                                                     pin.link = updated.link;
-                                                    await saveUpdatedMarker(this.app.vault, `${settings.dataFolder}/${moc_id}.md`, pin);
-                                                    await refreshMOCBlock(this.app, source, el, ctx); // refresh just the block
-                                                    //this.app.workspace.trigger("moc-block-refresh"); // Optionally re-render
+                                                    await saveUpdatedMarker(app.vault, `${settings.dataFolder}/${moc_id}.md`, pin);
+                                                    await refreshMOCBlock(app, source, el, ctx); // refresh just the block
+                                                    //app.workspace.trigger("moc-block-refresh"); // Optionally re-render
                                                 },
                                                 async (markerToDelete) => {
                                                     if (markerFile instanceof TFile) {
                                                         await deleteMarkerFromFile(
-                                                            this.app.vault, 
+                                                            app.vault, 
                                                             markerFile,
                                                             markerToDelete.markerId
                                                         );
-                                                        await refreshMOCBlock(this.app, source, el, ctx);
-                                                        this.app.workspace.trigger("moc-block-refresh");
+                                                        await refreshMOCBlock(app, source, el, ctx);
+                                                        app.workspace.trigger("moc-block-refresh");
                                                     }
                                                 }
                                             );
@@ -139,7 +139,7 @@ export function renderPinMarker(
                                             // Save to JSON config file when the marker is dropped
                                             if (wasDragged) {
                                                 await saveUpdatedMarker(
-                                                    this.app.vault,
+                                                    app.vault,
                                                     `${settings.dataFolder}/${moc_id}.md`,
                                                     pin
                                                 );
@@ -251,7 +251,7 @@ export function renderPolylineMarker(
         evt.stopPropagation();
         const linkTarget = poly.link?.replace(/^\[\[|\]\]$/g, "") ?? null;
         if (linkTarget) {
-            this.app.workspace.openLinkText(linkTarget, ctx.sourcePath);
+            app.workspace.openLinkText(linkTarget, ctx.sourcePath);
         }
     });
 
@@ -263,7 +263,7 @@ export function renderPolylineMarker(
 
         //console.log(`Opening edit modal for polyline: ${poly.markerId}`);
         const modal = new PolylineEditModal(
-            this.app,
+            app,
             poly,
             settings.styleNames,
             async (updated: PolylineMarker) => {
@@ -271,16 +271,16 @@ export function renderPolylineMarker(
                 poly.points = updated.points;
                 poly.styleName = updated.styleName;
                 await saveUpdatedMarker(
-                    this.app.vault,
+                    app.vault,
                     `${settings.dataFolder}/${moc_id}.md`,
                     poly
                 );
-                await refreshMOCBlock(this.app, source, el, ctx);
+                await refreshMOCBlock(app, source, el, ctx);
             },
             async (markerToDelete: PolylineMarker) => {
                 if (markerFile instanceof TFile) {
-                    await deleteMarkerFromFile(this.app.vault, markerFile, markerToDelete.markerId);
-                    await refreshMOCBlock(this.app, source, el, ctx);
+                    await deleteMarkerFromFile(app.vault, markerFile, markerToDelete.markerId);
+                    await refreshMOCBlock(app, source, el, ctx);
                 }
             }
         );

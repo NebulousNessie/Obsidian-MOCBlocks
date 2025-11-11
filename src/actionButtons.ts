@@ -88,7 +88,7 @@ export function addPinButton(
         // Cleanup removes listeners and restores UI
         function cleanup() {
             img.classList.remove("mocblockRenderer-editing-outline");
-            img.style.cursor = "";
+            //img.style.cursor = "";
             pinBtn.removeAttribute("disabled");
             polyBtn.removeAttribute("disabled");
             // Component owns the listeners; no manual removal needed

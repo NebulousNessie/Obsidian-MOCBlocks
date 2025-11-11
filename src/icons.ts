@@ -22,6 +22,11 @@ export function getIconSVG(iconName: string): string | null {
         const el = getIcon(iconName as any) as HTMLElement | null;
         if (el && (el as any).outerHTML) return (el as any).outerHTML;
     } catch (e) {
+        // Log and return null when an icon can't be resolved
+        // (sometimes getIcon throws for missing ids)
+        // Keep this non-fatal so callers can fallback.
+        // eslint-disable-next-line no-console
+        console.warn("getIconSVG failed for", iconName, e);
     }
     return null;
 }

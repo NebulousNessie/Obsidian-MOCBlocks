@@ -43,24 +43,24 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 		//containerEl.createEl("h2", { text: "Data file settings" });
-		new Setting(containerEl).setName('Data file settings').setHeading();
+		//new Setting(containerEl).setName('Data file settings').setHeading();
 
 		// Add data folder setting
 		new Setting(containerEl)
 			.setName("Data folder")
 			.setDesc("Folder in your vault where marker data files will be stored.")
 			.addText(text => {
-				text.setPlaceholder("e.g. MOCData");
-				text.setValue(this.plugin.settings.dataFolder || "MOCData");
+				text.setPlaceholder("e.g. mocdata");
+				text.setValue(this.plugin.settings.dataFolder || "mocdata");
 
 				// Track value but don't save yet: annoying workaround to prevent save on every keystroke.
-				let pendingValue = this.plugin.settings.dataFolder || "MOCData";
+				let pendingValue = this.plugin.settings.dataFolder || "mocdata";
 				text.onChange((value) => {
 					pendingValue = value.trim();
 				});
 				text.inputEl.addEventListener("blur", async () => {
 					const oldPath = normalizePath(this.plugin.settings.dataFolder);
-					const newPath = normalizePath(pendingValue || "MOCData");
+					const newPath = normalizePath(pendingValue || "mocdata");
 					this.plugin.settings.dataFolder = newPath;
 					await this.plugin.saveSettings();
 					await renameDataFolder(this.app, oldPath, newPath);
@@ -77,7 +77,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 		// ---------------------------------
 
 	// containerEl.createEl("h2", { text: "Style settings" });
-	new Setting(containerEl).setName('Style settings').setHeading();
+	new Setting(containerEl).setName('Marker & Polyline Styles').setHeading();
 
 		// Toggle for opaque pins
 		new Setting(containerEl)
@@ -106,7 +106,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 			});
 
 			// Style name (always visible)
-			const styleNameEl = row.createEl("span", { text: styleName, cls: "mocblock-settings-style-title" });
+			//const styleNameEl = row.createEl("span", { text: styleName, cls: "mocblock-settings-style-title" });
 
 			// Details div (hidden by default)
 			const detailsDiv = containerEl.createDiv({ cls: "mocblock-settings-style-details" });
@@ -199,7 +199,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 
 		// Style input
 		addSetting.addText(text => {
-			text.setPlaceholder("e.g. Style1");
+			text.setPlaceholder("e.g. style1");
 			text.onChange(value => { styleValue = value; });
 		});
 

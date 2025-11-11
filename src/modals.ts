@@ -1,5 +1,5 @@
-import { App, Modal, Setting, setIcon, TFile, SuggestModal, Notice, Component } from "obsidian";
-import { PinMarker, PolylineMarker, refreshMOCBlock } from "./helpers";
+import { App, Modal, Setting, setIcon, TFile, SuggestModal, Notice } from "obsidian";
+import { PinMarker, PolylineMarker } from "./helpers";
 import { styleNamesSetting } from "./settings";
 import { v4 as uuidv4 } from "uuid";
 
@@ -152,10 +152,10 @@ export class NewPinModal extends Modal {
 				btn.setButtonText("Add pin")
 					.setCta()
 					.onClick(async () => {
-					if (!selectedstyleName || !linkValue.trim()) {
-                    	new Notice("All fields are required.");
-                    	return;
-                	}
+						if (!selectedstyleName || !linkValue.trim()) {
+							new Notice("All fields are required.");
+							return;
+						}
 						const newMarker: PinMarker = {
 							markerId: uuidv4(),
 							x: this.percentX,
@@ -179,8 +179,8 @@ export class NewPinModal extends Modal {
 
 export class PinEditModal extends Modal {
 	marker: PinMarker;
-	onSave: (updated: PinMarker) => void;
-	onDelete?: (marker: PinMarker) => void;
+	onSave: (updated: PinMarker) => void | Promise<void>;
+	onDelete?: (marker: PinMarker) => void | Promise<void>;
 	styleNames: Record<string, styleNamesSetting>;
 	onCloseRefresh?: () => void;
 
@@ -188,8 +188,8 @@ export class PinEditModal extends Modal {
 		app: App,
 		marker: PinMarker,
 		styleNames: Record<string, styleNamesSetting>,
-		onSave: (updated: PinMarker) => void,
-		onDelete?: (marker: PinMarker) => void
+		onSave: (updated: PinMarker) => void | Promise<void>,
+		onDelete?: (marker: PinMarker) => void | Promise<void>
 		, onCloseRefresh?: () => void
 	) {
 		super(app);
@@ -262,7 +262,7 @@ export class PinEditModal extends Modal {
 			setIcon(btn.extraSettingsEl, "trash-2"); // Obsidian's trash icon
 			btn.extraSettingsEl.setAttr("aria-label", "Delete marker");
 			btn.extraSettingsEl.classList.add("mocblock-trash-hover");
-			btn.extraSettingsEl.addEventListener("click", async () => {
+			btn.extraSettingsEl.addEventListener("click", () => {
 				if (this.onDelete) {
 					this.onDelete?.(this.marker as any);
 				}
@@ -367,8 +367,8 @@ export class NewPolylineModal extends Modal {
 
 export class PolylineEditModal extends Modal {
 	marker: PolylineMarker;
-	onSave: (updated: PolylineMarker) => void;
-	onDelete?: (marker: PolylineMarker) => void;
+	onSave: (updated: PolylineMarker) => void | Promise<void>;
+	onDelete?: (marker: PolylineMarker) => void | Promise<void>;
     styleNames: Record<string, styleNamesSetting>;
 	onCloseRefresh?: () => void;
 
@@ -376,8 +376,8 @@ export class PolylineEditModal extends Modal {
 		app: App,
 		marker: PolylineMarker,
 		styleNames: Record<string, styleNamesSetting>,
-		onSave: (updated: PolylineMarker) => void,
-		onDelete?: (marker: PolylineMarker) => void
+		onSave: (updated: PolylineMarker) => void | Promise<void>,
+		onDelete?: (marker: PolylineMarker) => void | Promise<void>
 		, onCloseRefresh?: () => void
 	) {
 		super(app);
@@ -450,7 +450,7 @@ export class PolylineEditModal extends Modal {
 			setIcon(btn.extraSettingsEl, "trash-2");
 			btn.extraSettingsEl.setAttr("aria-label", "Delete polyline");
 			btn.extraSettingsEl.classList.add("mocblock-trash-hover");
-			btn.extraSettingsEl.addEventListener("click", async () => {
+			btn.extraSettingsEl.addEventListener("click", () => {
 				if (this.onDelete) {
 					this.onDelete?.(this.marker as any);
 				}
@@ -477,10 +477,10 @@ export class NewMocBlockModal extends Modal {
   onOpen() {
     const { contentEl } = this;
     // contentEl.createEl("h2", { text: "New MOC Block" });
-	new Setting(contentEl).setName('New MOC Block').setHeading();
+	new Setting(contentEl).setName('New moc block').setHeading();
 
 	let imageLink = "";
-	let moc_id = `moc-${Math.random().toString(36).slice(2, 10)}`;
+	const moc_id = `moc-${Math.random().toString(36).slice(2, 10)}`;
 
     //const imageInput = contentEl.createEl("input", { type: "text", placeholder: "Image path" });
 	new Setting(contentEl)

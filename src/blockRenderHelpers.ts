@@ -18,9 +18,9 @@ export function renderPinMarker(
     markerFile: any, 
     source: string, 
     el: HTMLElement, 
-    refreshMOCBlock: Function, 
-    saveUpdatedMarker: Function, 
-    deleteMarkerFromFile: Function,
+    refreshMOCBlock: (source: string, el: HTMLElement, ctx: any) => Promise<void> | void,
+    saveUpdatedMarker: (vault: any, path: string, marker: any) => Promise<void>,
+    deleteMarkerFromFile: (vault: any, file: any, markerId: string) => Promise<void>,
     parentComponent: Component) {
 
     
@@ -34,7 +34,6 @@ export function renderPinMarker(
     // Get SVG styles from style settings. If not defined, use defaults from below.
         const styleName = pin.styleName ?? "Default";
         const config = settings.styleNames[styleName];
-        const StyleName = config?.styleName ?? "";
         const iconName = config?.icon ?? "map-pin";
         const fillColour = config?.fillColour ?? "#705dcf";
         const strokeColour = config?.strokeColour ?? "#555454";
@@ -127,19 +126,22 @@ export function renderPinMarker(
                         wasDragged = false;
                     };
 
-                    const onDocMouseUp = async () => {
-                    if (isDragging) {
-                        isDragging = false;
+                    const onDocMouseUp = () => {
+                        // Wrap async logic in an IIFE so the registered handler returns void
+                        (async () => {
+                            if (isDragging) {
+                                isDragging = false;
 
-                        // Save to JSON config file when the marker is dropped
-                        if (wasDragged) {
-                            await saveUpdatedMarker(
-                                app.vault,
-                                `${settings.dataFolder}/${moc_id}.md`,
-                                pin
-                            );
-                        }
-                    }
+                                // Save to JSON config file when the marker is dropped
+                                if (wasDragged) {
+                                    await saveUpdatedMarker(
+                                        app.vault,
+                                        `${settings.dataFolder}/${moc_id}.md`,
+                                        pin
+                                    );
+                                }
+                            }
+                        })();
                     };
 
                     const onDocMouseMove = (evt: MouseEvent) => {
@@ -191,9 +193,9 @@ export function renderPolylineMarker(
     markerFile: any, 
     source: string, 
     el: HTMLElement, 
-    refreshMOCBlock: Function, 
-    saveUpdatedMarker: Function, 
-    deleteMarkerFromFile: Function,
+    refreshMOCBlock: (source: string, el: HTMLElement, ctx: any) => Promise<void> | void,
+    saveUpdatedMarker: (vault: any, path: string, marker: any) => Promise<void>,
+    deleteMarkerFromFile: (vault: any, file: any, markerId: string) => Promise<void>,
     parentComponent: Component) {
 
     // Get style config for this polyline
@@ -290,9 +292,9 @@ export function addResizeHandle(
     markerFile: any,
     source: string,
     el: HTMLElement,
-    refreshMOCBlock: any,
-    saveUpdatedMarker: any,
-    deleteMarkerFromFile: any,
+    refreshMOCBlock: (source: string, el: HTMLElement, ctx: any) => Promise<void> | void,
+    saveUpdatedMarker: (vault: any, path: string, marker: any) => Promise<void>,
+    deleteMarkerFromFile: (vault: any, file: any, markerId: string) => Promise<void>,
     parentComponent: Component
 ) {
     if (!isEditMode) return;
@@ -370,43 +372,46 @@ export function addResizeHandle(
         }
     };
 
-    const onMouseUp = async () => {
-        if (isResizing) {
-            isResizing = false;
-            document.body.classList.remove("mocblockRenderer-userselect-none");
+    const onMouseUp = () => {
+        // Wrap async logic in an IIFE so the registered handler returns void
+        (async () => {
+            if (isResizing) {
+                isResizing = false;
+                document.body.classList.remove("mocblockRenderer-userselect-none");
 
-            // --- Save new width to the MOC block YAML ---
-            const file = app.vault.getFileByPath(ctx.sourcePath);
-            if (!(file instanceof TFile)) return;
+                // --- Save new width to the MOC block YAML ---
+                const file = app.vault.getFileByPath(ctx.sourcePath);
+                if (!(file instanceof TFile)) return;
 
-            const content = await app.vault.read(file);
-            const section = ctx.getSectionInfo(el);
-            if (!section) return;
+                const content = await app.vault.read(file);
+                const section = ctx.getSectionInfo(el);
+                if (!section) return;
 
-            const lines = content.split("\n");
-            const blockLines = lines.slice(section.lineStart + 1, section.lineEnd);
+                const lines = content.split("\n");
+                const blockLines = lines.slice(section.lineStart + 1, section.lineEnd);
 
-            let found = false;
-            for (let i = 0; i < blockLines.length; i++) {
-                if (blockLines[i].trim().startsWith("image_width:")) {
-                    blockLines[i] = `image_width: ${img.offsetWidth}`;
-                    found = true;
-                    break;
+                let found = false;
+                for (let i = 0; i < blockLines.length; i++) {
+                    if (blockLines[i].trim().startsWith("image_width:")) {
+                        blockLines[i] = `image_width: ${img.offsetWidth}`;
+                        found = true;
+                        break;
+                    }
                 }
-            }
-            if (!found) {
-                blockLines.push(`image_width: ${img.offsetWidth}`);
-            }
+                if (!found) {
+                    blockLines.push(`image_width: ${img.offsetWidth}`);
+                }
 
-            const newBlock = ["```moc", ...blockLines, "```"].join("\n");
-            const newContent = [
-                ...lines.slice(0, section.lineStart),
-                newBlock,
-                ...lines.slice(section.lineEnd + 1),
-            ].join("\n");
+                const newBlock = ["```moc", ...blockLines, "```"].join("\n");
+                const newContent = [
+                    ...lines.slice(0, section.lineStart),
+                    newBlock,
+                    ...lines.slice(section.lineEnd + 1),
+                ].join("\n");
 
-            await app.vault.process(file, () => newContent);
-        }
+                await app.vault.process(file, () => newContent);
+            }
+        })();
     };
 
     parentComponent.registerDomEvent(window, "mousemove", onMouseMove);

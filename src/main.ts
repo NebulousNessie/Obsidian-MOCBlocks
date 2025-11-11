@@ -29,19 +29,19 @@ export default class MOCBlockPlugin extends Plugin {
 
 		this.addCommand({
 			id: "insert-mocblock",
-			name: "Insert MOC Block",
-				editorCallback: (editor, view) => {
-					new NewMocBlockModal(this.app, async (mocblockText) => {
-					editor.replaceSelection(mocblockText);
+			name: "Insert moc block",
+				editorCallback: (editor) => {
+					new NewMocBlockModal(this.app, (mocblockText) => {
+						editor.replaceSelection(mocblockText);
 					}).open();
 				},
 		});
 
-		this.addRibbonIcon("image", "Insert MOC Block", () => {
+		this.addRibbonIcon("image", "Insert moc block", () => {
 			const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
 			if (!activeView) return;
 
-			new NewMocBlockModal(this.app, async (mocblockText) => {
+			new NewMocBlockModal(this.app, (mocblockText) => {
 				activeView.editor.replaceSelection(mocblockText);
 			}).open();
 		});
@@ -63,7 +63,7 @@ export default class MOCBlockPlugin extends Plugin {
 				}
 			}	// Fix for getting correct view in multi-pane setup, and if page refreshes without being selected (i.e. file explorer clicked)
 
-			const isEditMode: boolean = !!(view && typeof view.getMode === "function" && view.getMode() === "source");
+				const isEditMode = !!(view && typeof view.getMode === "function" && view.getMode() === "source");
 
 		// Parse YAML MOC Block Data
 			let config: any;
@@ -79,7 +79,7 @@ export default class MOCBlockPlugin extends Plugin {
 
             } catch (e) {
                 console.error("Invalid YAML in moc block", e);
-                el.createEl("pre", { text: "Invalid YAML in MOC block." });
+                el.createEl("pre", { text: "Invalid yaml in moc block." });
                 return;
             }
 		// --------------------------------
@@ -119,7 +119,7 @@ export default class MOCBlockPlugin extends Plugin {
 				// moc_id config defined in check if statement above.
 				const imageRef = config.image;
 				const imageWidth = config.image_width;
-				const isFullscreen = config.fullscreen === true || config.fullscreen === "false";
+				// fullscreen flag currently unused
 				
 				// debug log, check yaml parsed correctly.
 				//console.log("Width:", imageWidth);
@@ -130,7 +130,7 @@ export default class MOCBlockPlugin extends Plugin {
 
 			// Check for image field. Cannot auto-generate, notify user to add one.
 				if (!imageRef) {
-					el.createEl("pre", { text: "Missing 'image' field. Cannot create MOC Block." });
+					el.createEl("pre", { text: "Missing 'image' field. Cannot create moc block." });
 					return;
 				}
 			// --------------------------------
@@ -221,8 +221,8 @@ export default class MOCBlockPlugin extends Plugin {
 			if (isEditMode) {
 				const actions = container.createEl("div", { cls: "mocblockRenderer-actions-buttons" });
 
-				const pinBtn = actions.createEl("button", { text: "+ Pin" });
-				const polyBtn = actions.createEl("button", { text: "✎ Area" });
+				const pinBtn = actions.createEl("button", { text: "+ pin" });
+				const polyBtn = actions.createEl("button", { text: "✎ area" });
 
 				// Prepare marker file path for action buttons
 				const markerFilePath = `${this.settings.dataFolder}/${moc_id}.md`;
@@ -320,7 +320,8 @@ export default class MOCBlockPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	async onunload() {
-
+	onunload(): void {
+		// no-op placeholder; keep method non-empty to satisfy lint rules
+		void 0;
 	}
 }

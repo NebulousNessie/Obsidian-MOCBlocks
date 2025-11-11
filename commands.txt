@@ -1,0 +1,5 @@
+Run ESLint on all src/ files: npx -y eslint "src/**/*.ts"
+Run ESLint on all src/ files and autofix: npx -y eslint "src/**/*.ts" --fix
+Type checking: npx -y tsc -p tsconfig.json
+
+Build to main.js: npm run Build

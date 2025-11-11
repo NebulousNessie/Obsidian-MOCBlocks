@@ -66,7 +66,7 @@ export function renderPinMarker(
             if (svgEl) {
 
                 // Left Click Navigation to linked note
-                const onClick = (evt: MouseEvent) => {
+                    const onClick = (evt: MouseEvent) => {
                     if (wasDragged) {
                         wasDragged = false; // reset for next time
                         return; // Suppress navigation
@@ -74,7 +74,7 @@ export function renderPinMarker(
                     evt.stopPropagation();
                     const linkTarget = pin.link?.replace(/^\[\[|\]\]$/g, '') ?? null;
                     if (linkTarget) {
-                        app.workspace.openLinkText(linkTarget, ctx.sourcePath);
+                        	void app.workspace.openLinkText(linkTarget, ctx.sourcePath);
                     }
                 };
                 parentComponent.registerDomEvent(svgEl as unknown as HTMLElement, "click", onClick);
@@ -104,7 +104,8 @@ export function renderPinMarker(
                                     markerToDelete.markerId
                                 );
                                 await refreshMOCBlock(source, el, ctx);
-                                app.workspace.trigger("moc-block-refresh");
+                                // trigger may be synchronous, but use void to explicitly ignore any return value
+                                void app.workspace.trigger("moc-block-refresh");
                             }
                         }
                     );
@@ -241,7 +242,8 @@ export function renderPolylineMarker(
         evt.stopPropagation();
         const linkTarget = poly.link?.replace(/^\[\[|\]\]$/g, "") ?? null;
         if (linkTarget) {
-            app.workspace.openLinkText(linkTarget, ctx.sourcePath);
+            // openLinkText returns a Promise; we don't need to await navigation here
+            void app.workspace.openLinkText(linkTarget, ctx.sourcePath);
         }
     };
 

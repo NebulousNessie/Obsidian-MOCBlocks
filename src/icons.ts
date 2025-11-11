@@ -19,8 +19,8 @@ export const AVAILABLE_ICONS = [
 
 export function getIconSVG(iconName: string): string | null {
     try {
-        const el = getIcon(iconName) as HTMLElement | null;
-        if (el && (el as HTMLElement).outerHTML) return (el as HTMLElement).outerHTML;
+        const el = getIcon(iconName);
+        if (el && el.outerHTML) return el.outerHTML;
     } catch (e) {
         console.warn("getIconSVG failed for", iconName, e);
     }

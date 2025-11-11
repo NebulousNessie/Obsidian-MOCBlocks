@@ -151,29 +151,31 @@ export class NewPinModal extends Modal {
 			.addButton(btn => {
 				btn.setButtonText("Add pin")
 					.setCta()
-					.onClick(async () => {
-						if (!selectedstyleName || !linkValue.trim()) {
-							new Notice("All fields are required.");
-							return;
-						}
-						const newMarker: PinMarker = {
-							markerId: uuidv4(),
-							x: this.percentX,
-							y: this.percentY,
-							type: "pin",
-							styleName: selectedstyleName,
-							link: linkValue.trim(),
-						};
-						await this.onSubmit(newMarker);
-						this.close();
+					.onClick(() => {
+						void (async () => {
+							if (!selectedstyleName || !linkValue.trim()) {
+								new Notice("All fields are required.");
+								return;
+							}
+							const newMarker: PinMarker = {
+								markerId: uuidv4(),
+								x: this.percentX,
+								y: this.percentY,
+								type: "pin",
+								styleName: selectedstyleName,
+								link: linkValue.trim(),
+							};
+							await this.onSubmit(newMarker);
+							this.close();
+						})();
 					});
 			});
 	}
 
 	onClose() {
 		this.contentEl.empty();
-		if (this.onCancel) this.onCancel();
-		if (this.onCloseRefresh) this.onCloseRefresh();
+		if (this.onCancel) void this.onCancel();
+		if (this.onCloseRefresh) void this.onCloseRefresh();
 	}
 }
 
@@ -247,13 +249,15 @@ export class PinEditModal extends Modal {
 				.setButtonText("Save")
 				.setCta()
 				.onClick(() => {
-					// Update common fields
-					this.marker.link = linkValue.trim();
-					if (this.marker.type === "pin") {
-						this.marker.styleName = selectedstyleName;
-					}
-					this.onSave(this.marker);
-					this.close();
+					void (async () => {
+						// Update common fields
+						this.marker.link = linkValue.trim();
+						if (this.marker.type === "pin") {
+							this.marker.styleName = selectedstyleName;
+						}
+						await this.onSave(this.marker);
+						this.close();
+					})();
 				});
 		});
 
@@ -264,7 +268,7 @@ export class PinEditModal extends Modal {
 			btn.extraSettingsEl.classList.add("mocblock-trash-hover");
 			btn.extraSettingsEl.addEventListener("click", () => {
 				if (this.onDelete) {
-					this.onDelete?.(this.marker);
+					void this.onDelete?.(this.marker);
 				}
 				this.close();
 			});
@@ -273,7 +277,7 @@ export class PinEditModal extends Modal {
 
 	onClose() {
 		this.contentEl.empty();
-		if (this.onCloseRefresh) this.onCloseRefresh();
+		if (this.onCloseRefresh) void this.onCloseRefresh();
 	}
 }
 
@@ -339,20 +343,22 @@ export class NewPolylineModal extends Modal {
 		new Setting(contentEl).addButton(btn => {
 			btn.setButtonText("Add polyline")
 				.setCta()
-				.onClick(async () => {
-				if (!selectedstyleName || !linkValue.trim()) {
-                    new Notice("All fields are required.");
-                    return;
-                }
-					const newMarker: PolylineMarker = {
-						markerId: uuidv4(),
-						type: "polyline",
-						points: this.points,
-						link: linkValue.trim(),
-						styleName: selectedstyleName,
-					};
-					await this.onSubmit(newMarker);
-					this.close();
+				.onClick(() => {
+					void (async () => {
+						if (!selectedstyleName || !linkValue.trim()) {
+							new Notice("All fields are required.");
+							return;
+						}
+						const newMarker: PolylineMarker = {
+							markerId: uuidv4(),
+							type: "polyline",
+							points: this.points,
+							link: linkValue.trim(),
+							styleName: selectedstyleName,
+						};
+						await this.onSubmit(newMarker);
+						this.close();
+					})();
 				});
 		});
 
@@ -360,8 +366,8 @@ export class NewPolylineModal extends Modal {
 
 	onClose() {
 		this.contentEl.empty();
-		if (this.onCancel) this.onCancel();
-		if (this.onCloseRefresh) this.onCloseRefresh();
+		if (this.onCancel) void this.onCancel();
+		if (this.onCloseRefresh) void this.onCloseRefresh();
 	}
 }
 
@@ -437,11 +443,13 @@ export class PolylineEditModal extends Modal {
 				.setButtonText("Save")
 				.setCta()
 				.onClick(() => {
-					this.marker.link = linkValue.trim();
-					this.marker.styleName = selectedstyleName;
-					this.onSave(this.marker);
-					this.close();
-					//console.log("MARKER: ", this.marker);
+					void (async () => {
+						this.marker.link = linkValue.trim();
+						this.marker.styleName = selectedstyleName;
+						await this.onSave(this.marker);
+						this.close();
+						//console.log("MARKER: ", this.marker);
+					})();
 				});
 		});
 
@@ -451,9 +459,9 @@ export class PolylineEditModal extends Modal {
 			btn.extraSettingsEl.setAttr("aria-label", "Delete polyline");
 			btn.extraSettingsEl.classList.add("mocblock-trash-hover");
 			btn.extraSettingsEl.addEventListener("click", () => {
-				if (this.onDelete) {
-					this.onDelete?.(this.marker);
-				}
+					if (this.onDelete) {
+						void this.onDelete?.(this.marker);
+					}
 				this.close();
 			});
 		});
@@ -461,7 +469,7 @@ export class PolylineEditModal extends Modal {
 
 	onClose() {
 		this.contentEl.empty();
-		if (this.onCloseRefresh) this.onCloseRefresh();
+		if (this.onCloseRefresh) void this.onCloseRefresh();
 	}
 }
 
@@ -514,6 +522,6 @@ export class NewMocBlockModal extends Modal {
 
   onClose() {
     this.contentEl.empty();
-		if (this.onCloseRefresh) this.onCloseRefresh();
+		if (this.onCloseRefresh) void this.onCloseRefresh();
   }
 }

@@ -58,20 +58,22 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 				text.onChange((value) => {
 					pendingValue = value.trim();
 				});
-				text.inputEl.addEventListener("blur", async () => {
-					const oldPath = normalizePath(this.plugin.settings.dataFolder);
-					const newPath = normalizePath(pendingValue || "mocdata");
-					this.plugin.settings.dataFolder = newPath;
-					await this.plugin.saveSettings();
-					await renameDataFolder(this.app, oldPath, newPath);
+				text.inputEl.addEventListener("blur", () => {
+					void (async () => {
+						const oldPath = normalizePath(this.plugin.settings.dataFolder);
+						const newPath = normalizePath(pendingValue || "mocdata");
+						this.plugin.settings.dataFolder = newPath;
+						await this.plugin.saveSettings();
+						await renameDataFolder(this.app, oldPath, newPath);
 
-					// Create the folder if it doesn't exist
-					const folderExists = await this.app.vault.adapter.exists(newPath);
-					if (!folderExists) {
-						await this.app.vault.createFolder(newPath);
-					}
+						// Create the folder if it doesn't exist
+						const folderExists = await this.app.vault.adapter.exists(newPath);
+						if (!folderExists) {
+							await this.app.vault.createFolder(newPath);
+						}
 
-					this.display();
+						this.display();
+					})();
 				});
 			});
 		// ---------------------------------
@@ -180,10 +182,12 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 					button.setIcon("trash");
 					button.setTooltip("Delete style");
 					button.extraSettingsEl.classList.add("mocblock-trash-hover");
-					button.onClick(async () => {
-						delete this.plugin.settings.styleNames[styleName];
-						await this.plugin.saveSettings();
-						this.display(); // re-render
+					button.onClick(() => {
+						void (async () => {
+							delete this.plugin.settings.styleNames[styleName];
+							await this.plugin.saveSettings();
+							this.display(); // re-render
+						})();
 					});
 				});
 
@@ -248,21 +252,23 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 		});
 
 		addSetting.addButton(btn => {
-			btn.setButtonText("Add").onClick(async () => {
-				const trimmed = styleValue.trim();
-				if (!trimmed) return;
+			btn.setButtonText("Add").onClick(() => {
+				void (async () => {
+					const trimmed = styleValue.trim();
+					if (!trimmed) return;
 
-				this.plugin.settings.styleNames[trimmed] = {
-					styleName: styleValue,
-					icon: iconValue,
-					fillColour: fillColourValue,
-					strokeColour: strokeColourValue,
-					opacity: opacityValue,
-				};
+					this.plugin.settings.styleNames[trimmed] = {
+						styleName: styleValue,
+						icon: iconValue,
+						fillColour: fillColourValue,
+						strokeColour: strokeColourValue,
+						opacity: opacityValue,
+					};
 
-				//console.log("New style added:", styleValue, iconValue, fillColourValue, strokeColourValue);
-				await this.plugin.saveSettings();
-				this.display(); // re-render UI
+					//console.log("New style added:", styleValue, iconValue, fillColourValue, strokeColourValue);
+					await this.plugin.saveSettings();
+					this.display(); // re-render UI
+				})();
 			});
 		});
 

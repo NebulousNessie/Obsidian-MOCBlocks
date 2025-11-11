@@ -56,7 +56,7 @@ export default class MOCBlockPlugin extends Plugin {
 
 			let view: MarkdownView | undefined = undefined;
 			for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
-				const candidate = (leaf as WorkspaceLeaf).view as MarkdownView | undefined;
+				const candidate = leaf.view as MarkdownView | undefined;
 				if (candidate && candidate.file && candidate.file.path === ctx.sourcePath) {
 					view = candidate;
 					break;

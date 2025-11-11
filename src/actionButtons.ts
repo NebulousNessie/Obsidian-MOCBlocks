@@ -38,8 +38,8 @@ export function addPinButton(
         pinBtn.setAttribute("disabled", "true");
         polyBtn.setAttribute("disabled", "true");
 
-        // Click handler attached to container (so overlay/SVG won't block)
-        const clickHandler = async (evt: MouseEvent) => {
+    // Click handler attached to container (so overlay/SVG won't block)
+    const clickHandler = (evt: MouseEvent) => {
             // compute image rect once at click time
             const imgRect = img.getBoundingClientRect();
 

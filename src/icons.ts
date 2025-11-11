@@ -1,59 +1,70 @@
-import {
-    faMapMarkerAlt,
-    faFlagCheckered,
-    faPlay,
-    faStickyNote,
-    faArrowRight,
-    faCircle,
-    faStar,
-    faHome,
-    faAnchor,
-    faCompass,
-} from "@fortawesome/free-solid-svg-icons";
+import { getIcon } from "obsidian";
 
-import { icon, library } from "@fortawesome/fontawesome-svg-core";
-library.add(
-    faMapMarkerAlt,
-    faFlagCheckered,
-    faPlay,
-    faStickyNote,
-    faArrowRight,
-    faCircle,
-    faStar,
-    faHome,
-    faAnchor,
-    faCompass
-);
-
-
+// A curated list of Obsidian built-in icon ids to present to users.
 export const AVAILABLE_ICONS = [
-	"faMapMarkerAlt",
-	"faFlagCheckered",
-	"faPlay",
-	"faStickyNote",
-	"faArrowRight",
-	"faCircle",
-	"faStar",
-	"faHome",
-	"faAnchor",
-	"faCompass",
+    "pin",
+    "map-pin",
+    "flag-triangle-right",
+    "brush",
+    "brackets",
+    "brackets-curly",
+    "circle",
+    "star",
+    "home",
+    "pen",
+    "anchor",
+    "test-tube",
+    "puzzle",
 ];
 
-
-// Map icon name to its SVG markup
-const ICON_SVGS: Record<string, string> = {
-    faMapMarkerAlt: icon(faMapMarkerAlt).html[0],
-    faFlagCheckered: icon(faFlagCheckered).html[0],
-    faPlay: icon(faPlay).html[0],
-    faStickyNote: icon(faStickyNote).html[0],
-    faArrowRight: icon(faArrowRight).html[0],
-    faCircle: icon(faCircle).html[0],
-    faStar: icon(faStar).html[0],
-    faHome: icon(faHome).html[0],
-    faAnchor: icon(faAnchor).html[0],
-    faCompass: icon(faCompass).html[0],
-};
-
 export function getIconSVG(iconName: string): string | null {
-    return ICON_SVGS[iconName] ?? null;
+    try {
+        const el = getIcon(iconName as any) as HTMLElement | null;
+        if (el && (el as any).outerHTML) return (el as any).outerHTML;
+    } catch (e) {
+    }
+    return null;
+}
+
+export function getStyledIconSVG(
+    iconName: string,
+    opts?: {
+        width?: number | string;
+        height?: number | string;
+        fill?: string;
+        stroke?: string;
+        opacity?: string | number;
+        strokeWidth?: string | number;
+    }
+): string | null {
+    try {
+        const raw = getIconSVG(iconName);
+        if (!raw) return null;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(raw, "image/svg+xml");
+        const svg = doc.documentElement as unknown as SVGSVGElement | null;
+        if (!svg) return null;
+
+        if (opts?.width !== undefined) svg.setAttribute("width", String(opts.width));
+        if (opts?.height !== undefined) svg.setAttribute("height", String(opts.height));
+        if (opts?.strokeWidth !== undefined) svg.setAttribute("stroke-width", String(opts.strokeWidth));
+
+        const fill = opts?.fill;
+        const stroke = opts?.stroke;
+        const opacity = opts?.opacity;
+
+        doc.querySelectorAll("path, circle, rect, polygon, line, polyline").forEach((node: Element) => {
+            if (fill !== undefined) node.setAttribute("fill", String(fill));
+            if (stroke !== undefined) node.setAttribute("stroke", String(stroke));
+            if (opacity !== undefined) node.setAttribute("opacity", String(opacity));
+        });
+
+        return svg.outerHTML;
+    } catch (e) {
+        return null;
+    }
+}
+
+export function getIconIds(): string[] {
+    return AVAILABLE_ICONS.slice();
 }

@@ -2,7 +2,7 @@ import { TFile, Component } from "obsidian";
 
 import { PinMarker, PolylineMarker, getCodeBlockContainer } from "./helpers";
 import { MOCBlockSettings } from "./settings";
-import { getIconSVG } from "./icons";
+import { getStyledIconSVG } from "./icons";
 import { PinEditModal, PolylineEditModal } from "./modals";
 
 
@@ -35,13 +35,13 @@ export function renderPinMarker(
         const styleName = pin.styleName ?? "Default";
         const config = settings.styleNames[styleName];
         const StyleName = config?.styleName ?? "";
-        const iconName = config?.icon ?? "faMapMarkerAlt";
+        const iconName = config?.icon ?? "map-pin";
         const fillColour = config?.fillColour ?? "#705dcf";
         const strokeColour = config?.strokeColour ?? "#555454";
         const opacity = settings.pinsAlwaysOpaque ? "1" : (config?.opacity ?? "0.5");  
     //--------------------------------
 
-    const svgMarkup = getIconSVG(iconName);		// Get SVG file to be rendered from fontawesome
+    const svgMarkup = getStyledIconSVG(iconName, { width: 35, height: 35, fill: fillColour, stroke: strokeColour, opacity: opacity, strokeWidth: 0.75 });
     //console.log("Resolved icon settings:", { StyleName, iconName, fillColour, strokeColour });
 
     // Render the marker SVGs (polyline and pins)
@@ -61,18 +61,6 @@ export function renderPinMarker(
             const svgEl = markerEl.querySelector("svg");
 
             if (svgEl) {
-
-                // Styling SVG based on marker's style settings.
-                    svgEl.setAttribute("width", "24");
-                    svgEl.setAttribute("height", "24");
-                    svgEl.setAttribute("stroke-width", "1.5");
-                    svgEl.querySelectorAll("path").forEach(path => {
-                        path.setAttribute("fill", fillColour);
-                        path.setAttribute("stroke", strokeColour);
-                        path.setAttribute("opacity", opacity);
-                    });
-                    //console.log("Styled paths in SVG with:", { fillColour, strokeColour });
-                //--------------------------------
 
                 // Left Click Navigation to linked note
                 const onClick = (evt: MouseEvent) => {

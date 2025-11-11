@@ -21,7 +21,7 @@ export const DEFAULT_SETTINGS: MOCBlockSettings = {
 	styleNames: {
 		Default: {
 			styleName: "Default",
-			icon: "faMapMarkerAlt",
+			icon: "map-pin",
 			fillColour: "#2faf15",
 			strokeColour: "#555454",
 			opacity: "0.5",

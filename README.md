@@ -5,13 +5,17 @@ This is a plugin for creating simple Maps of Content, with a background image, u
 ---
 ## How the Plugin Works
 
-1. Click the ribbon icon.
-2. Choose an image, and click 'insert'.
-3. A 'moc block' code block is created, using the syntax below. This will render your chosen image into obsidian.
-4. In editor mode, you can click one of two buttons:
-	  - Add pin: clicking on the image now drops a pin on the image, and allows you to edit the pin attributes (label, link) within a popup.
-	  - Add polyline: allows you to draw a polygon on the image, within which will be clickable. Polygon attributed are added in the popup.
-5. Each marker (pin or polygon) has a marker style attributed to it. You can add, change, or delete marker styles in the plugin settings. NOTE: If a previously used marker style is deleted, any markers which used that style will revert to the default style (light green), until changed or another marker with the same name is added in settings again.
+### Adding a MOC Block
+![Adding a MOC Block](assets/Gif_1.gif)
+
+### Adding and Editing Markers
+![Adding and Editing Markers](assets/Gif_2.gif)
+
+### Adding Polylines
+![Adding Polylines](assets/Gif_3.gif)
+
+### Configuring Marker Styles
+![Configuring Marker Styles](assets/Gif_4.gif)
 
 ---
 ## The Syntax

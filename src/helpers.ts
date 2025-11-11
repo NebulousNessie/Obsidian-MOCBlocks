@@ -36,7 +36,7 @@ export async function loadMarkerDataMD(
   }
 
   try {
-    const content = await vault.read(file);
+  const content = await vault.cachedRead(file); // preferred over vault.read for read-only use cases.
     const jsonMatch = content.match(/```json\s*([\s\S]*?)```/);
     if (!jsonMatch) {
       console.warn(`❌ No JSON block in ${path}`);

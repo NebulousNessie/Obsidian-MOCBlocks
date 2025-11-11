@@ -402,7 +402,7 @@ export function addResizeHandle(
                 ...lines.slice(section.lineEnd + 1),
             ].join("\n");
 
-            await app.vault.modify(file, newContent);
+            await app.vault.process(file, () => newContent);
         }
     });
 }

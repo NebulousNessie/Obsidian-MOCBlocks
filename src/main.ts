@@ -93,7 +93,7 @@ export default class MOCBlockPlugin extends Plugin {
 					const section = ctx.getSectionInfo(el);
 					if (!section) return;
 
-					const content = await this.app.vault.read(file);
+					const content = await this.app.vault.cachedRead(file);	// preferred over vault.read for read-only use cases.
 					const lines = content.split("\n");
 					const blockLines = lines.slice(section.lineStart + 1, section.lineEnd);
 					blockLines.push(`moc_id: ${moc_id}`);

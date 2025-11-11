@@ -103,7 +103,7 @@ export function renderPinMarker(
                             pin.styleName = updated.styleName;
                             pin.link = updated.link;
                             await saveUpdatedMarker(app.vault, `${settings.dataFolder}/${moc_id}.md`, pin);
-                            await refreshMOCBlock(app, source, el, ctx); // refresh just the block
+                            await refreshMOCBlock(source, el, ctx); // refresh just the block
                         },
                         async (markerToDelete) => {
                             if (markerFile instanceof TFile) {
@@ -112,7 +112,7 @@ export function renderPinMarker(
                                     markerFile,
                                     markerToDelete.markerId
                                 );
-                                await refreshMOCBlock(app, source, el, ctx);
+                                await refreshMOCBlock(source, el, ctx);
                                 app.workspace.trigger("moc-block-refresh");
                             }
                         }
@@ -261,7 +261,7 @@ export function renderPolylineMarker(
             app,
             poly,
             settings.styleNames,
-            async (updated: PolylineMarker) => {
+                async (updated: PolylineMarker) => {
                 poly.link = updated.link;
                 poly.points = updated.points;
                 poly.styleName = updated.styleName;
@@ -270,12 +270,12 @@ export function renderPolylineMarker(
                     `${settings.dataFolder}/${moc_id}.md`,
                     poly
                 );
-                await refreshMOCBlock(app, source, el, ctx);
+                await refreshMOCBlock(source, el, ctx);
             },
             async (markerToDelete: PolylineMarker) => {
                 if (markerFile instanceof TFile) {
                     await deleteMarkerFromFile(app.vault, markerFile, markerToDelete.markerId);
-                    await refreshMOCBlock(app, source, el, ctx);
+                    await refreshMOCBlock(source, el, ctx);
                 }
             }
         );

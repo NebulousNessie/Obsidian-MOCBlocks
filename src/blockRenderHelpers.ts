@@ -1,4 +1,4 @@
-import { TFile } from "obsidian";
+import { TFile, Component } from "obsidian";
 
 import { PinMarker, PolylineMarker, getCodeBlockContainer } from "./helpers";
 import { MOCBlockSettings } from "./settings";
@@ -20,7 +20,8 @@ export function renderPinMarker(
     el: HTMLElement, 
     refreshMOCBlock: Function, 
     saveUpdatedMarker: Function, 
-    deleteMarkerFromFile: Function) {
+    deleteMarkerFromFile: Function,
+    parentComponent?: Component) {
 
     
     // Position marker on MOC Block image
@@ -134,7 +135,7 @@ export function renderPinMarker(
                     wasDragged = false;
                     });
 
-                    document.addEventListener("mouseup", async () => {
+                    const onDocMouseUp = async () => {
                     if (isDragging) {
                         isDragging = false;
 
@@ -147,9 +148,9 @@ export function renderPinMarker(
                             );
                         }
                     }
-                    });
+                    };
 
-                    document.addEventListener("mousemove", (evt) => {
+                    const onDocMouseMove = (evt: MouseEvent) => {
                         if (!isDragging) return;
 
                         wasDragged = true;
@@ -173,7 +174,15 @@ export function renderPinMarker(
                         // 🔹 Only update UI live
                         markerEl.style.left = `${percentX}%`;
                         markerEl.style.top = `${percentY}%`;
-                    });
+                    };
+
+                    if (parentComponent && typeof parentComponent.registerDomEvent === "function") {
+                        parentComponent.registerDomEvent(document, "mouseup", onDocMouseUp);
+                        parentComponent.registerDomEvent(document, "mousemove", onDocMouseMove);
+                    } else {
+                        document.addEventListener("mouseup", onDocMouseUp);
+                        document.addEventListener("mousemove", onDocMouseMove);
+                    }
                 //--------------------------------
             } else {
                 console.warn("SVG element not found");
@@ -196,7 +205,8 @@ export function renderPolylineMarker(
     el: HTMLElement, 
     refreshMOCBlock: Function, 
     saveUpdatedMarker: Function, 
-    deleteMarkerFromFile: Function) {
+    deleteMarkerFromFile: Function,
+    parentComponent?: Component) {
 
     // Get style config for this polyline
     const styleName = poly.styleName ?? "Default";
@@ -292,7 +302,8 @@ export function addResizeHandle(
     el: HTMLElement,
     refreshMOCBlock: any,
     saveUpdatedMarker: any,
-    deleteMarkerFromFile: any
+    deleteMarkerFromFile: any,
+    parentComponent?: Component
 ) {
     if (!isEditMode) return;
 
@@ -345,12 +356,12 @@ export function addResizeHandle(
             for (const marker of markerData.markers) {
                 if (marker.type === "pin") {
                     renderPinMarker(
-                        marker, container, img, settings, isEditMode, ctx, app, moc_id, markerFile, source, el, refreshMOCBlock, saveUpdatedMarker, deleteMarkerFromFile
+                        marker, container, img, settings, isEditMode, ctx, app, moc_id, markerFile, source, el, refreshMOCBlock, saveUpdatedMarker, deleteMarkerFromFile, parentComponent
                     );
                 }
                 if (marker.type === "polyline") {
                     renderPolylineMarker(
-                        marker, container, img, settings, isEditMode, ctx, app, moc_id, markerFile, source, el, refreshMOCBlock, saveUpdatedMarker, deleteMarkerFromFile
+                        marker, container, img, settings, isEditMode, ctx, app, moc_id, markerFile, source, el, refreshMOCBlock, saveUpdatedMarker, deleteMarkerFromFile, parentComponent
                     );
                 }
             }
@@ -358,16 +369,16 @@ export function addResizeHandle(
         pendingAnimation = false;
     };
 
-    window.addEventListener("mousemove", (e) => {
+    const onMouseMove = (e: MouseEvent) => {
         if (!isResizing) return;
         latestEvent = e;
         if (!pendingAnimation) {
             pendingAnimation = true;
             requestAnimationFrame(handleResizeFrame);
         }
-    });
+    };
 
-    window.addEventListener("mouseup", async () => {
+    const onMouseUp = async () => {
         if (isResizing) {
             isResizing = false;
             document.body.classList.remove("mocblockRenderer-userselect-none");
@@ -404,5 +415,13 @@ export function addResizeHandle(
 
             await app.vault.process(file, () => newContent);
         }
-    });
+    };
+
+    if (parentComponent && typeof parentComponent.registerDomEvent === "function") {
+        parentComponent.registerDomEvent(window, "mousemove", onMouseMove);
+        parentComponent.registerDomEvent(window, "mouseup", onMouseUp);
+    } else {
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+    }
 }

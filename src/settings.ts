@@ -254,7 +254,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 		});
 
 	// Prevent auto focus on data input folder
-	setTimeout(() => {
+	window.setTimeout(() => {
 		(document.activeElement as HTMLElement)?.blur();
 	}, 0);
 

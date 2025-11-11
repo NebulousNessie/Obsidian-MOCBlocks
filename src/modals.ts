@@ -4,81 +4,6 @@ import { styleNamesSetting } from "./settings";
 import { v4 as uuidv4 } from "uuid";
 
 
-// class LinkSuggestModal extends SuggestModal<TFile> {
-//     onChoose: (file: TFile) => void;
-
-//     constructor(app: App, onChoose: (file: TFile) => void) {
-//         super(app);
-//         this.onChoose = onChoose;
-//         this.setPlaceholder("Type to search for a note...");
-//     }
-
-//     getSuggestions(query: string): TFile[] {
-//         return this.app.vault.getMarkdownFiles().filter(file =>
-//             file.basename.toLowerCase().includes(query.toLowerCase())
-//         );
-//     }
-
-//     renderSuggestion(file: TFile, el: HTMLElement) {
-//         el.setText(file.basename);
-//     }
-
-//     onChooseSuggestion(file: TFile) {
-//         this.onChoose(file);
-//     }
-// }
-
-// type LinkSuggestion = { file: TFile; heading?: string };
-// class LinkSuggestModal extends SuggestModal<LinkSuggestion> {
-// 	onChoose: (file: TFile, heading?: string) => void;
-
-// 	constructor(app: App, onChoose: (file: TFile, heading?: string) => void) {
-// 		super(app);
-// 		this.onChoose = onChoose;
-// 		this.setPlaceholder("Type to search for a note or subheading...");
-// 	}
-
-// 	async getSuggestions(query: string): Promise<LinkSuggestion[]> {
-// 		const files = this.app.vault.getMarkdownFiles();
-// 		const lowerQuery = query.toLowerCase();
-// 		const suggestions: LinkSuggestion[] = [];
-// 		for (const file of files) {
-// 			if (file.basename.toLowerCase().includes(lowerQuery)) {
-// 				suggestions.push({ file });
-// 			}
-// 			// Read file for headings
-// 			try {
-// 				const content = await this.app.vault.read(file);
-// 				const lines = content.split(/\r?\n/);
-// 				for (const line of lines) {
-// 					const headingMatch = line.match(/^(#+)\s+(.*)/);
-// 					if (headingMatch) {
-// 						const headingText = headingMatch[2].trim();
-// 						if (headingText && headingText.toLowerCase().includes(lowerQuery)) {
-// 							suggestions.push({ file, heading: headingText });
-// 						}
-// 					}
-// 				}
-// 			} catch (e) {
-// 				// ignore file read errors
-// 			}
-// 		}
-// 		return suggestions;
-// 	}
-
-// 	renderSuggestion(suggestion: LinkSuggestion, el: HTMLElement) {
-// 		if (suggestion.heading) {
-// 			el.createEl("div", { text: `${suggestion.file.basename} > ${suggestion.heading}` });
-// 		} else {
-// 			el.createEl("div", { text: suggestion.file.basename });
-// 		}
-// 	}
-
-// 	onChooseSuggestion(suggestion: LinkSuggestion) {
-// 		this.onChoose(suggestion.file, suggestion.heading);
-// 	}
-// }
-
 type LinkSuggestion = { file: TFile; heading?: string };
 
 class LinkSuggestModal extends SuggestModal<LinkSuggestion> {
@@ -132,7 +57,6 @@ class LinkSuggestModal extends SuggestModal<LinkSuggestion> {
 	}
 }
 
-
 class ImageSuggestModal extends SuggestModal<TFile> {
   onChoose: (file: TFile) => void;
 
@@ -169,6 +93,7 @@ export class NewPinModal extends Modal {
 	percentY: number;
 	onSubmit: (marker: PinMarker) => Promise<void>;
 	onCancel?: () => void;
+	onCloseRefresh?: () => void;
 
 	constructor(
 		app: App,
@@ -176,7 +101,8 @@ export class NewPinModal extends Modal {
 		x: number,
 		y: number,
 		onSubmit: (marker: PinMarker) => Promise<void>,
-		onCancel?: () => void
+		onCancel?: () => void,
+		onCloseRefresh?: () => void
 	) {
 		super(app);
 		this.styleNames = styleNames;
@@ -184,6 +110,7 @@ export class NewPinModal extends Modal {
 		this.percentY = y;
 		this.onSubmit = onSubmit;
 		this.onCancel = onCancel;
+		this.onCloseRefresh = onCloseRefresh;
 	}
 
 	onOpen() {
@@ -246,6 +173,7 @@ export class NewPinModal extends Modal {
 	onClose() {
 		this.contentEl.empty();
 		if (this.onCancel) this.onCancel();
+		if (this.onCloseRefresh) this.onCloseRefresh();
 	}
 }
 
@@ -254,6 +182,7 @@ export class PinEditModal extends Modal {
 	onSave: (updated: PinMarker) => void;
 	onDelete?: (marker: PinMarker) => void;
 	styleNames: Record<string, styleNamesSetting>;
+	onCloseRefresh?: () => void;
 
 	constructor(
 		app: App,
@@ -261,12 +190,14 @@ export class PinEditModal extends Modal {
 		styleNames: Record<string, styleNamesSetting>,
 		onSave: (updated: PinMarker) => void,
 		onDelete?: (marker: PinMarker) => void
+		, onCloseRefresh?: () => void
 	) {
 		super(app);
 		this.marker = { ...marker }; // clone to avoid mutating original until save
 		this.styleNames = styleNames;
 		this.onSave = onSave;
 		this.onDelete = onDelete;
+		this.onCloseRefresh = onCloseRefresh;
 	}
 
 	onOpen() {
@@ -331,9 +262,9 @@ export class PinEditModal extends Modal {
 			setIcon(btn.extraSettingsEl, "trash-2"); // Obsidian's trash icon
 			btn.extraSettingsEl.setAttr("aria-label", "Delete marker");
 			btn.extraSettingsEl.classList.add("mocblock-trash-hover");
-			btn.extraSettingsEl.addEventListener("click", () => {
+			btn.extraSettingsEl.addEventListener("click", async () => {
 				if (this.onDelete) {
-					this.onDelete(this.marker);
+					await this.onDelete(this.marker);
 				}
 				this.close();
 			});
@@ -342,6 +273,7 @@ export class PinEditModal extends Modal {
 
 	onClose() {
 		this.contentEl.empty();
+		if (this.onCloseRefresh) this.onCloseRefresh();
 	}
 }
 
@@ -350,6 +282,7 @@ export class NewPolylineModal extends Modal {
 	styleNames: Record<string, styleNamesSetting>;
 	onSubmit: (marker: PolylineMarker) => Promise<void>;
 	onCancel: () => void;
+	onCloseRefresh?: () => void;
 
 
 	constructor(
@@ -357,13 +290,15 @@ export class NewPolylineModal extends Modal {
 		points: [number, number][],
 		styleNames: Record<string, styleNamesSetting>,
 		onSubmit: (marker: PolylineMarker) => Promise<void>,
-		onCancel: () => void
+		onCancel: () => void,
+		onCloseRefresh?: () => void
 	) {
 		super(app);
 		this.points = points;
 		this.styleNames = styleNames;
 		this.onSubmit = onSubmit;
 		this.onCancel = onCancel;
+		this.onCloseRefresh = onCloseRefresh;
 	}
 
 	onOpen() {
@@ -426,6 +361,7 @@ export class NewPolylineModal extends Modal {
 	onClose() {
 		this.contentEl.empty();
 		if (this.onCancel) this.onCancel();
+		if (this.onCloseRefresh) this.onCloseRefresh();
 	}
 }
 
@@ -434,6 +370,7 @@ export class PolylineEditModal extends Modal {
 	onSave: (updated: PolylineMarker) => void;
 	onDelete?: (marker: PolylineMarker) => void;
     styleNames: Record<string, styleNamesSetting>;
+	onCloseRefresh?: () => void;
 
 	constructor(
 		app: App,
@@ -441,12 +378,14 @@ export class PolylineEditModal extends Modal {
 		styleNames: Record<string, styleNamesSetting>,
 		onSave: (updated: PolylineMarker) => void,
 		onDelete?: (marker: PolylineMarker) => void
+		, onCloseRefresh?: () => void
 	) {
 		super(app);
 		this.marker = { ...marker }; // clone so we don't mutate original until save
 		this.styleNames = styleNames;
 		this.onSave = onSave;
 		this.onDelete = onDelete;
+		this.onCloseRefresh = onCloseRefresh;
 	}
 
 	onOpen() {
@@ -511,9 +450,9 @@ export class PolylineEditModal extends Modal {
 			setIcon(btn.extraSettingsEl, "trash-2");
 			btn.extraSettingsEl.setAttr("aria-label", "Delete polyline");
 			btn.extraSettingsEl.classList.add("mocblock-trash-hover");
-			btn.extraSettingsEl.addEventListener("click", () => {
+			btn.extraSettingsEl.addEventListener("click", async () => {
 				if (this.onDelete) {
-					this.onDelete(this.marker);
+					await this.onDelete(this.marker);
 				}
 				this.close();
 			});
@@ -522,11 +461,13 @@ export class PolylineEditModal extends Modal {
 
 	onClose() {
 		this.contentEl.empty();
+		if (this.onCloseRefresh) this.onCloseRefresh();
 	}
 }
 
 export class NewMocBlockModal extends Modal {
   onSubmit: (result: string) => void;
+	onCloseRefresh?: () => void;
 
   constructor(app: App, onSubmit: (result: string) => void) {
     super(app);
@@ -571,5 +512,6 @@ export class NewMocBlockModal extends Modal {
 
   onClose() {
     this.contentEl.empty();
+		if (this.onCloseRefresh) this.onCloseRefresh();
   }
 }

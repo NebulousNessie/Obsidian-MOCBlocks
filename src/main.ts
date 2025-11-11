@@ -54,8 +54,16 @@ export default class MOCBlockPlugin extends Plugin {
             this.addChild(mocBlockComponent);
 			//console.log("Processing MOC block:", source);
 
-			const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-			const isEditMode: boolean = !!(view && view.getMode && view.getMode() === "source");
+			let view: MarkdownView | undefined = undefined;
+			for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
+				const candidate = (leaf as any).view as MarkdownView | undefined;
+				if (candidate && candidate.file && candidate.file.path === ctx.sourcePath) {
+					view = candidate;
+					break;
+				}
+			}	// Fix for getting correct view in multi-pane setup, and if page refreshes without being selected (i.e. file explorer clicked)
+
+			const isEditMode: boolean = !!(view && typeof view.getMode === "function" && view.getMode() === "source");
 
 		// Parse YAML MOC Block Data
 			let config: any;
@@ -202,7 +210,8 @@ export default class MOCBlockPlugin extends Plugin {
 				el,
 				(source: string, el: HTMLElement, ctx: any) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent),
 				saveUpdatedMarker,
-				deleteMarkerFromFile
+				deleteMarkerFromFile,
+				mocBlockComponent
 			);
 
 			// --------------------------------
@@ -271,7 +280,8 @@ export default class MOCBlockPlugin extends Plugin {
 						el, 
 						(source: string, el: HTMLElement, ctx: any) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent), 
 						saveUpdatedMarker, 
-						deleteMarkerFromFile
+						deleteMarkerFromFile,
+						mocBlockComponent
 					);
 				}
 
@@ -291,7 +301,8 @@ export default class MOCBlockPlugin extends Plugin {
 						el, 
 						(source: string, el: HTMLElement, ctx: any) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent), 
 						saveUpdatedMarker, 
-						deleteMarkerFromFile
+						deleteMarkerFromFile,
+						mocBlockComponent
 					);
 				}
 

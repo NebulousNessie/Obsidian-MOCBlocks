@@ -1,4 +1,4 @@
-import { Component } from "obsidian";
+import { Component, App, MarkdownPostProcessorContext } from "obsidian";
 import { NewPinModal, NewPolylineModal } from "./modals";
 import { addMarkerToFile, refreshMOCBlock } from "./helpers";
 import { PolylineMarker } from "./helpers";
@@ -10,10 +10,10 @@ export function addPinButton(
     pinBtn: HTMLButtonElement,
     polyBtn: HTMLButtonElement,
     settings: MOCBlockSettings,
-    app: any,
+    app: App,
     source: string,
     el: HTMLElement,
-    ctx: any,
+    ctx: MarkdownPostProcessorContext,
     markerFilePath: string,
     parentComponent: Component
 ) {
@@ -96,8 +96,8 @@ export function addPinButton(
         }
 
         // Use capture so we see the click before other handlers; remove with cleanup
-        parentComponent.registerDomEvent(container as unknown as HTMLElement, "click", clickHandler, true as any);
-        parentComponent.registerDomEvent(window, "keydown", escHandler, true as any);
+    parentComponent.registerDomEvent(container as unknown as HTMLElement, "click", clickHandler, true);
+    parentComponent.registerDomEvent(window, "keydown", escHandler, true);
     };
 
     parentComponent.registerDomEvent(pinBtn, "click", () => setupPinFlow());
@@ -109,10 +109,10 @@ export function addPolylineButton(
     pinBtn: HTMLButtonElement,
     polyBtn: HTMLButtonElement,
     settings: MOCBlockSettings,
-    app: any,
+    app: App,
     source: string,
     el: HTMLElement,
-    ctx: any,
+    ctx: MarkdownPostProcessorContext,
     markerFilePath: string,
     parentComponent: Component
 ) {
@@ -226,7 +226,7 @@ export function addPolylineButton(
 
         parentComponent.registerDomEvent(img, "click", clickHandler);
         parentComponent.registerDomEvent(img, "contextmenu", rightClickHandler);
-        parentComponent.registerDomEvent(window, "keydown", escHandler, true as any);
+    parentComponent.registerDomEvent(window, "keydown", escHandler, true);
     };
 
     parentComponent.registerDomEvent(polyBtn, "click", () => setupPolyFlow());

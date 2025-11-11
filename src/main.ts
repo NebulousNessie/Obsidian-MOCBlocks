@@ -1,4 +1,4 @@
-import { Plugin, TFile, MarkdownView, parseYaml, Component } from "obsidian";
+import { Plugin, TFile, MarkdownView, parseYaml, Component, WorkspaceLeaf, MarkdownPostProcessorContext } from "obsidian";
 
 import { loadMarkerDataMD, saveUpdatedMarker, refreshMOCBlock, deleteMarkerFromFile } from "./helpers";
 import { MOCBlockSettings, DEFAULT_SETTINGS, MOCBlockSettingTab } from "./settings";
@@ -56,26 +56,33 @@ export default class MOCBlockPlugin extends Plugin {
 
 			let view: MarkdownView | undefined = undefined;
 			for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
-				const candidate = (leaf as any).view as MarkdownView | undefined;
+				const candidate = (leaf as WorkspaceLeaf).view as MarkdownView | undefined;
 				if (candidate && candidate.file && candidate.file.path === ctx.sourcePath) {
 					view = candidate;
 					break;
 				}
-			}	// Fix for getting correct view in multi-pane setup, and if page refreshes without being selected (i.e. file explorer clicked)
+			} 	// Fix for getting correct view in multi-pane setup, and if page refreshes without being selected (i.e. file explorer clicked)
 
 				const isEditMode = !!(view && typeof view.getMode === "function" && view.getMode() === "source");
 
 		// Parse YAML MOC Block Data
-			let config: any;
+			type MocConfig = Record<string, unknown> & {
+				image?: string;
+				image_width?: number | string;
+				fullscreen?: boolean | string;
+				moc_id?: string;
+			};
+
+			let config: MocConfig;
 			try {
 				config = parseYaml(source);
 				
 				// Normalize keys to lowercase
-				const normalizedConfig: Record<string, any> = {};
+				const normalizedConfig: Record<string, unknown> = {};
 				for (const key in config) {
-					normalizedConfig[key.toLowerCase()] = config[key];
+					normalizedConfig[key.toLowerCase()] = (config as Record<string, unknown>)[key];
 				}
-				config = normalizedConfig;
+				config = normalizedConfig as MocConfig;
 
             } catch (e) {
                 console.error("Invalid YAML in moc block", e);
@@ -208,7 +215,7 @@ export default class MOCBlockPlugin extends Plugin {
 				markerFile,
 				source,
 				el,
-				(source: string, el: HTMLElement, ctx: any) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent),
+				(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent),
 				saveUpdatedMarker,
 				deleteMarkerFromFile,
 				mocBlockComponent
@@ -278,7 +285,7 @@ export default class MOCBlockPlugin extends Plugin {
 						markerFile, 
 						source, 
 						el, 
-						(source: string, el: HTMLElement, ctx: any) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent), 
+						(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent), 
 						saveUpdatedMarker, 
 						deleteMarkerFromFile,
 						mocBlockComponent
@@ -299,7 +306,7 @@ export default class MOCBlockPlugin extends Plugin {
 						markerFile, 
 						source, 
 						el, 
-						(source: string, el: HTMLElement, ctx: any) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent), 
+						(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => refreshMOCBlock(this.app, source, el, ctx, mocBlockComponent), 
 						saveUpdatedMarker, 
 						deleteMarkerFromFile,
 						mocBlockComponent

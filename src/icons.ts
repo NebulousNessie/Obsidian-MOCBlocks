@@ -19,8 +19,8 @@ export const AVAILABLE_ICONS = [
 
 export function getIconSVG(iconName: string): string | null {
     try {
-        const el = getIcon(iconName as any) as HTMLElement | null;
-        if (el && (el as any).outerHTML) return (el as any).outerHTML;
+        const el = getIcon(iconName) as HTMLElement | null;
+        if (el && (el as HTMLElement).outerHTML) return (el as HTMLElement).outerHTML;
     } catch (e) {
         // Log and return null when an icon can't be resolved
         // (sometimes getIcon throws for missing ids)

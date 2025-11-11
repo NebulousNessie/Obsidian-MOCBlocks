@@ -264,7 +264,7 @@ export class PinEditModal extends Modal {
 			btn.extraSettingsEl.classList.add("mocblock-trash-hover");
 			btn.extraSettingsEl.addEventListener("click", () => {
 				if (this.onDelete) {
-					this.onDelete?.(this.marker as any);
+					this.onDelete?.(this.marker);
 				}
 				this.close();
 			});
@@ -452,7 +452,7 @@ export class PolylineEditModal extends Modal {
 			btn.extraSettingsEl.classList.add("mocblock-trash-hover");
 			btn.extraSettingsEl.addEventListener("click", () => {
 				if (this.onDelete) {
-					this.onDelete?.(this.marker as any);
+					this.onDelete?.(this.marker);
 				}
 				this.close();
 			});

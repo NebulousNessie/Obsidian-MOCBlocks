@@ -1,6 +1,6 @@
-import { TFile, Component } from "obsidian";
+import { TFile, Component, App, Vault, MarkdownPostProcessorContext } from "obsidian";
 
-import { PinMarker, PolylineMarker, getCodeBlockContainer } from "./helpers";
+import { PinMarker, PolylineMarker, getCodeBlockContainer, Marker, MarkerData } from "./helpers";
 import { MOCBlockSettings } from "./settings";
 import { getStyledIconSVG } from "./icons";
 import { PinEditModal, PolylineEditModal } from "./modals";
@@ -12,15 +12,15 @@ export function renderPinMarker(
     img: HTMLImageElement,
     settings: MOCBlockSettings, 
     isEditMode: boolean, 
-    ctx: any, 
-    app: any,
+    ctx: MarkdownPostProcessorContext, 
+    app: App,
     moc_id: string, 
-    markerFile: any, 
+    markerFile: TFile | string | null, 
     source: string, 
     el: HTMLElement, 
-    refreshMOCBlock: (source: string, el: HTMLElement, ctx: any) => Promise<void> | void,
-    saveUpdatedMarker: (vault: any, path: string, marker: any) => Promise<void>,
-    deleteMarkerFromFile: (vault: any, file: any, markerId: string) => Promise<void>,
+    refreshMOCBlock: (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => Promise<void> | void,
+    saveUpdatedMarker: (vault: Vault, path: string, marker: Marker) => Promise<void>,
+    deleteMarkerFromFile: (vault: Vault, file: string | TFile, markerId: string) => Promise<void>,
     parentComponent: Component) {
 
     
@@ -187,15 +187,15 @@ export function renderPolylineMarker(
     img: HTMLImageElement,
     settings: MOCBlockSettings, 
     isEditMode: boolean, 
-    ctx: any, 
-    app: any, 
+    ctx: MarkdownPostProcessorContext, 
+    app: App, 
     moc_id: string, 
-    markerFile: any, 
+    markerFile: TFile | string | null, 
     source: string, 
     el: HTMLElement, 
-    refreshMOCBlock: (source: string, el: HTMLElement, ctx: any) => Promise<void> | void,
-    saveUpdatedMarker: (vault: any, path: string, marker: any) => Promise<void>,
-    deleteMarkerFromFile: (vault: any, file: any, markerId: string) => Promise<void>,
+    refreshMOCBlock: (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => Promise<void> | void,
+    saveUpdatedMarker: (vault: Vault, path: string, marker: Marker) => Promise<void>,
+    deleteMarkerFromFile: (vault: Vault, file: string | TFile, markerId: string) => Promise<void>,
     parentComponent: Component) {
 
     // Get style config for this polyline
@@ -284,17 +284,17 @@ export function addResizeHandle(
     container: HTMLElement,
     img: HTMLImageElement,
     isEditMode: boolean,
-    markerData: any,
-    settings: any,
-    ctx: any,
-    app: any,
+    markerData: MarkerData,
+    settings: MOCBlockSettings,
+    ctx: MarkdownPostProcessorContext,
+    app: App,
     moc_id: string,
-    markerFile: any,
+    markerFile: TFile | string | null,
     source: string,
     el: HTMLElement,
-    refreshMOCBlock: (source: string, el: HTMLElement, ctx: any) => Promise<void> | void,
-    saveUpdatedMarker: (vault: any, path: string, marker: any) => Promise<void>,
-    deleteMarkerFromFile: (vault: any, file: any, markerId: string) => Promise<void>,
+    refreshMOCBlock: (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => Promise<void> | void,
+    saveUpdatedMarker: (vault: Vault, path: string, marker: Marker) => Promise<void>,
+    deleteMarkerFromFile: (vault: Vault, file: string | TFile, markerId: string) => Promise<void>,
     parentComponent: Component
 ) {
     if (!isEditMode) return;

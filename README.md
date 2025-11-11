@@ -27,6 +27,13 @@ image_width: [Image Px width, AUTOMATICALLY GENERATED]
 ```
 ````
 
+Marker location and link data is saved in the moc_id file in your mocdata folder (in vault explorer).
+> [!IMPORTANT]
+> Note: If you delete any of these files, you will have lost that mocblock's data!
+
+Marker Style data is stored in the plugin data.
+> [!IMPORTANT]
+> Marker Styles data will be deleted upon plugin deletion from your vault.
 ---
 
 # Known issues

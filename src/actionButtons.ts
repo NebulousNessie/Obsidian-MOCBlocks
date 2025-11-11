@@ -17,8 +17,8 @@ export function addPinButton(
     markerFilePath: string,
     parentComponent: Component
 ) {
-    pinBtn.addEventListener("click", () => {
-
+    // Use component-registered events when available so listeners get cleaned up
+    const setupPinFlow = () => {
         // Add outline to image
         img.classList.add("mocblockRenderer-editing-outline");
 
@@ -28,9 +28,8 @@ export function addPinButton(
             overlay = container.createDiv({ cls: "mocblockRenderer-editing-overlay" });
         }
 
-
         // Create SVG overlay exactly matching image dimensions
-        const svgNS = "http://www.w3.org/2000/svg";	// SVG namespace
+        const svgNS = "http://www.w3.org/2000/svg"; // SVG namespace
         const svg = document.createElementNS(svgNS, "svg");
         svg.classList.add("mocblockRenderer-overlay");
         container.appendChild(svg);
@@ -92,15 +91,16 @@ export function addPinButton(
             img.style.cursor = "";
             pinBtn.removeAttribute("disabled");
             polyBtn.removeAttribute("disabled");
-            container.removeEventListener("click", clickHandler, true);
-            window.removeEventListener("keydown", escHandler, true);
+            // Component owns the listeners; no manual removal needed
             svg.remove(); // remove SVG overlay
         }
 
         // Use capture so we see the click before other handlers; remove with cleanup
-        container.addEventListener("click", clickHandler, true);
-        window.addEventListener("keydown", escHandler, true);
-    });
+        parentComponent.registerDomEvent(container as unknown as HTMLElement, "click", clickHandler, true as any);
+        parentComponent.registerDomEvent(window, "keydown", escHandler, true as any);
+    };
+
+    parentComponent.registerDomEvent(pinBtn, "click", () => setupPinFlow());
 }
 
 export function addPolylineButton(
@@ -116,28 +116,28 @@ export function addPolylineButton(
     markerFilePath: string,
     parentComponent: Component
 ) {
-    polyBtn.addEventListener("click", () => {
 
+    const setupPolyFlow = () => {
         // Visual cues for editing: crosshair cursor and moc block outline.
         img.classList.add("mocblockRenderer-editing-outline");
 
         // disable buttons while waiting (prevents duplicate listeners)
         pinBtn.setAttribute("disabled", "true");
-        pinBtn.setAttribute("cursor", "")
+        pinBtn.setAttribute("cursor", "");
         polyBtn.setAttribute("disabled", "true");
 
-    // Variables setup
-        const svgNS = "http://www.w3.org/2000/svg";	// SVG namespace
-        const points: [number, number][] = [];	// Array to hold points as [x%, y%]
-        let polygon: SVGPolygonElement | null = null;	// Object to hold drawn polygon
-        const rect = img.getBoundingClientRect();	// get image dimensions
+        // Variables setup
+        const svgNS = "http://www.w3.org/2000/svg"; // SVG namespace
+        const points: [number, number][] = []; // Array to hold points as [x%, y%]
+        let polygon: SVGPolygonElement | null = null; // Object to hold drawn polygon
+        const rect = img.getBoundingClientRect(); // get image dimensions
 
-    // Create SVG overlay exactly matching image dimensions
+        // Create SVG overlay exactly matching image dimensions
         const svg = document.createElementNS(svgNS, "svg");
         svg.classList.add("mocblockRenderer-overlay");
         container.appendChild(svg);
 
-    // Click handler to add points
+        // Click handler to add points
         const clickHandler = (evt: MouseEvent) => {
             const imgRect = img.getBoundingClientRect();
             const x = evt.clientX - imgRect.left;
@@ -178,7 +178,6 @@ export function addPolylineButton(
             svg.appendChild(dot);
         };
 
-
         // Escape cancels placement
         const escHandler = (ev: KeyboardEvent) => {
             if (ev.key === "Escape") {
@@ -186,25 +185,19 @@ export function addPolylineButton(
             }
         };
 
-
         // Cleanup removes listeners and restores UI
         function cleanup() {
             img.classList.remove("mocblockRenderer-editing-outline");
             pinBtn.removeAttribute("disabled");
             polyBtn.removeAttribute("disabled");
-            img.removeEventListener("click", clickHandler, true);
-            img.removeEventListener("contextmenu", rightClickHandler, true);
-            window.removeEventListener("keydown", escHandler, true);
+            // Component owns the listeners; no manual removal needed
             svg.remove(); // remove SVG overlay
         }
-
 
         // Right-click handler to finish polyline
         const rightClickHandler = (evt: MouseEvent) => {
             evt.preventDefault();
             evt.stopPropagation();
-            // img.removeEventListener("click", clickHandler);
-            // img.removeEventListener("contextmenu", rightClickHandler);
 
             // Ensure polygon is properly closed
             if (polygon) {
@@ -231,8 +224,10 @@ export function addPolylineButton(
             newPolylineModal.open();
         };
 
-        img.addEventListener("click", clickHandler);
-        img.addEventListener("contextmenu", rightClickHandler);
-        window.addEventListener("keydown", escHandler, true);
-    });
+        parentComponent.registerDomEvent(img, "click", clickHandler);
+        parentComponent.registerDomEvent(img, "contextmenu", rightClickHandler);
+        parentComponent.registerDomEvent(window, "keydown", escHandler, true as any);
+    };
+
+    parentComponent.registerDomEvent(polyBtn, "click", () => setupPolyFlow());
 }

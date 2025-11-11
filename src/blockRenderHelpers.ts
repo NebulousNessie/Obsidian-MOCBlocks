@@ -21,7 +21,7 @@ export function renderPinMarker(
     refreshMOCBlock: Function, 
     saveUpdatedMarker: Function, 
     deleteMarkerFromFile: Function,
-    parentComponent?: Component) {
+    parentComponent: Component) {
 
     
     // Position marker on MOC Block image
@@ -75,65 +75,65 @@ export function renderPinMarker(
                 //--------------------------------
 
                 // Left Click Navigation to linked note
-                    svgEl.addEventListener("click", (evt) => {
-                        if (wasDragged) {
-                            wasDragged = false; // reset for next time
-                            return; // Suppress navigation
-                        }
-                        evt.stopPropagation();
-                        const linkTarget = pin.link?.replace(/^\[\[|\]\]$/g, '') ?? null;
-                        if (linkTarget) {
-                            app.workspace.openLinkText(linkTarget, ctx.sourcePath);
-                        }
-                    });
+                const onClick = (evt: MouseEvent) => {
+                    if (wasDragged) {
+                        wasDragged = false; // reset for next time
+                        return; // Suppress navigation
+                    }
+                    evt.stopPropagation();
+                    const linkTarget = pin.link?.replace(/^\[\[|\]\]$/g, '') ?? null;
+                    if (linkTarget) {
+                        app.workspace.openLinkText(linkTarget, ctx.sourcePath);
+                    }
+                };
+                parentComponent.registerDomEvent(svgEl as unknown as HTMLElement, "click", onClick);
                 //--------------------------------
 
                 // Right Click to open Edit Modal
-                    svgEl.addEventListener("contextmenu", (evt) => {
-                        if (!isEditMode) return;	// If not in edit mode, ignore input.
-                        evt.preventDefault(); // prevent default browser context menu
-                        evt.stopPropagation();
+                const onContext = (evt: MouseEvent) => {
+                    if (!isEditMode) return; // If not in edit mode, ignore input.
+                    evt.preventDefault(); // prevent default browser context menu
+                    evt.stopPropagation();
 
-                        //console.log(`🛠️ Opening edit modal for marker: ${pin.markerId}`);
-                        const modal = new PinEditModal(
-                            app, 
-                            pin, 
-                            settings.styleNames, 
-                            async (updated) => {
-                                pin.styleName = updated.styleName;
-                                pin.link = updated.link;
-                                await saveUpdatedMarker(app.vault, `${settings.dataFolder}/${moc_id}.md`, pin);
-                                await refreshMOCBlock(app, source, el, ctx); // refresh just the block
-                                //app.workspace.trigger("moc-block-refresh"); // Optionally re-render
-                            },
-                            async (markerToDelete) => {
-                                if (markerFile instanceof TFile) {
-                                    await deleteMarkerFromFile(
-                                        app.vault, 
-                                        markerFile,
-                                        markerToDelete.markerId
-                                    );
-                                    await refreshMOCBlock(app, source, el, ctx);
-                                    app.workspace.trigger("moc-block-refresh");
-                                }
+                    const modal = new PinEditModal(
+                        app,
+                        pin,
+                        settings.styleNames,
+                        async (updated) => {
+                            pin.styleName = updated.styleName;
+                            pin.link = updated.link;
+                            await saveUpdatedMarker(app.vault, `${settings.dataFolder}/${moc_id}.md`, pin);
+                            await refreshMOCBlock(app, source, el, ctx); // refresh just the block
+                        },
+                        async (markerToDelete) => {
+                            if (markerFile instanceof TFile) {
+                                await deleteMarkerFromFile(
+                                    app.vault,
+                                    markerFile,
+                                    markerToDelete.markerId
+                                );
+                                await refreshMOCBlock(app, source, el, ctx);
+                                app.workspace.trigger("moc-block-refresh");
                             }
-                        );
-                        modal.open();
-                    });
+                        }
+                    );
+                    modal.open();
+                };
+                parentComponent.registerDomEvent(svgEl as unknown as HTMLElement, "contextmenu", onContext);
                 //--------------------------------
             
                 // Drag to reposition marker
                     let isDragging = false;
                     let wasDragged = false;
 
-                    svgEl.addEventListener("mousedown", (evt) => {
-                    if (evt.button !== 0) return; // only left click
-                    if (!isEditMode) return;	// If not in edit mode, ignore input.
+                    const onMouseDown = (evt: MouseEvent) => {
+                        if (evt.button !== 0) return; // only left click
+                        if (!isEditMode) return; // If not in edit mode, ignore input.
 
-                    evt.preventDefault();
-                    isDragging = true;
-                    wasDragged = false;
-                    });
+                        evt.preventDefault();
+                        isDragging = true;
+                        wasDragged = false;
+                    };
 
                     const onDocMouseUp = async () => {
                     if (isDragging) {
@@ -176,13 +176,9 @@ export function renderPinMarker(
                         markerEl.style.top = `${percentY}%`;
                     };
 
-                    if (parentComponent && typeof parentComponent.registerDomEvent === "function") {
-                        parentComponent.registerDomEvent(document, "mouseup", onDocMouseUp);
-                        parentComponent.registerDomEvent(document, "mousemove", onDocMouseMove);
-                    } else {
-                        document.addEventListener("mouseup", onDocMouseUp);
-                        document.addEventListener("mousemove", onDocMouseMove);
-                    }
+                    parentComponent.registerDomEvent(svgEl as unknown as HTMLElement, "mousedown", onMouseDown);
+                    parentComponent.registerDomEvent(document, "mouseup", onDocMouseUp);
+                    parentComponent.registerDomEvent(document, "mousemove", onDocMouseMove);
                 //--------------------------------
             } else {
                 console.warn("SVG element not found");
@@ -206,7 +202,7 @@ export function renderPolylineMarker(
     refreshMOCBlock: Function, 
     saveUpdatedMarker: Function, 
     deleteMarkerFromFile: Function,
-    parentComponent?: Component) {
+    parentComponent: Component) {
 
     // Get style config for this polyline
     const styleName = poly.styleName ?? "Default";
@@ -247,21 +243,20 @@ export function renderPolylineMarker(
     container.appendChild(polylineEl);
 
     // Left Click → Open linked note
-    polygon.addEventListener("click", (evt) => {
+    const onPolyClick = (evt: MouseEvent) => {
         evt.stopPropagation();
         const linkTarget = poly.link?.replace(/^\[\[|\]\]$/g, "") ?? null;
         if (linkTarget) {
             app.workspace.openLinkText(linkTarget, ctx.sourcePath);
         }
-    });
+    };
 
     // Right Click → Open Polyline Edit Modal
-    polygon.addEventListener("contextmenu", (evt) => {
+    const onPolyContext = (evt: MouseEvent) => {
         if (!isEditMode) return;
         evt.preventDefault();
         evt.stopPropagation();
 
-        //console.log(`Opening edit modal for polyline: ${poly.markerId}`);
         const modal = new PolylineEditModal(
             app,
             poly,
@@ -285,7 +280,10 @@ export function renderPolylineMarker(
             }
         );
         modal.open();
-    });
+    };
+
+    parentComponent.registerDomEvent(polygon as unknown as HTMLElement, "click", onPolyClick);
+    parentComponent.registerDomEvent(polygon as unknown as HTMLElement, "contextmenu", onPolyContext);
 }
 
 export function addResizeHandle(
@@ -303,7 +301,7 @@ export function addResizeHandle(
     refreshMOCBlock: any,
     saveUpdatedMarker: any,
     deleteMarkerFromFile: any,
-    parentComponent?: Component
+    parentComponent: Component
 ) {
     if (!isEditMode) return;
 
@@ -315,13 +313,15 @@ export function addResizeHandle(
     let pendingAnimation = false;
     let latestEvent: MouseEvent | null = null;
 
-    resizeHandle.addEventListener("mousedown", (e) => {
+    const onResizeMouseDown = (e: MouseEvent) => {
         e.preventDefault();
         isResizing = true;
         startX = e.clientX;
         startWidth = img.offsetWidth;
         document.body.classList.add("mocblockRenderer-userselect-none");
-    });
+    };
+
+    parentComponent.registerDomEvent(resizeHandle as unknown as HTMLElement, "mousedown", onResizeMouseDown);
 
     const handleResizeFrame = () => {
         if (!isResizing || !latestEvent) {
@@ -417,11 +417,6 @@ export function addResizeHandle(
         }
     };
 
-    if (parentComponent && typeof parentComponent.registerDomEvent === "function") {
-        parentComponent.registerDomEvent(window, "mousemove", onMouseMove);
-        parentComponent.registerDomEvent(window, "mouseup", onMouseUp);
-    } else {
-        window.addEventListener("mousemove", onMouseMove);
-        window.addEventListener("mouseup", onMouseUp);
-    }
+    parentComponent.registerDomEvent(window, "mousemove", onMouseMove);
+    parentComponent.registerDomEvent(window, "mouseup", onMouseUp);
 }

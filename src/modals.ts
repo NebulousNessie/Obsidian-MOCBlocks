@@ -1,5 +1,5 @@
-import { App, Modal, Setting, setIcon, TFile, SuggestModal, Notice } from "obsidian";
-import { PinMarker, PolylineMarker } from "./helpers";
+import { App, Modal, Setting, setIcon, TFile, SuggestModal, Notice, Component } from "obsidian";
+import { PinMarker, PolylineMarker, refreshMOCBlock } from "./helpers";
 import { styleNamesSetting } from "./settings";
 import { v4 as uuidv4 } from "uuid";
 
@@ -264,7 +264,7 @@ export class PinEditModal extends Modal {
 			btn.extraSettingsEl.classList.add("mocblock-trash-hover");
 			btn.extraSettingsEl.addEventListener("click", async () => {
 				if (this.onDelete) {
-					await this.onDelete(this.marker);
+					this.onDelete?.(this.marker as any);
 				}
 				this.close();
 			});
@@ -452,7 +452,7 @@ export class PolylineEditModal extends Modal {
 			btn.extraSettingsEl.classList.add("mocblock-trash-hover");
 			btn.extraSettingsEl.addEventListener("click", async () => {
 				if (this.onDelete) {
-					await this.onDelete(this.marker);
+					this.onDelete?.(this.marker as any);
 				}
 				this.close();
 			});
@@ -496,18 +496,20 @@ export class NewMocBlockModal extends Modal {
 		});
 	});
 
-    const submitBtn = contentEl.createEl("button", { text: "Insert" });
-    submitBtn.addEventListener("click", () => {
-      const block = [
-        "```moc",
-        `image: ${imageLink}`,
-        `moc_id: ${moc_id}`,
-        "```",
-      ].join("\n");
+	const submitBtn = contentEl.createEl("button", { text: "Insert" });
+	const onSubmitClick = () => {
+		const block = [
+			"```moc",
+			`image: ${imageLink}`,
+			`moc_id: ${moc_id}`,
+			"```",
+		].join("\n");
 
-      this.onSubmit(block);
-      this.close();
-    });
+		this.onSubmit(block);
+		this.close();
+	};
+
+	submitBtn.addEventListener("click", onSubmitClick);
   }
 
   onClose() {

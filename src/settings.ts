@@ -47,7 +47,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 
 		// Add data folder setting
 		new Setting(containerEl)
-			.setName("Data Folder")
+			.setName("Data folder")
 			.setDesc("Folder in your vault where marker data files will be stored.")
 			.addText(text => {
 				text.setPlaceholder("e.g. MOCData");

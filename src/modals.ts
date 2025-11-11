@@ -142,7 +142,7 @@ export class NewPinModal extends Modal {
 		new Setting(contentEl)
 			.setName("Style")
 			.addDropdown(drop => {
-				Object.keys(this.styleNames).forEach(styleName => drop.addOption(styleName, styleName));
+				Object.keys(this.styleNames).forEach(key => drop.addOption(key, this.styleNames[key].styleName ?? key));
 				drop.setValue(selectedstyleName);
 				drop.onChange(value => selectedstyleName = value);
 			});
@@ -328,13 +328,13 @@ export class NewPolylineModal extends Modal {
 			});
 
         // Style dropdown
-        new Setting(contentEl)
-            .setName("Style")
-            .addDropdown(drop => {
-                Object.keys(this.styleNames).forEach(style => drop.addOption(style, style));
-                drop.setValue(selectedstyleName);
-                drop.onChange(value => selectedstyleName = value);
-            });
+		new Setting(contentEl)
+			.setName("Style")
+			.addDropdown(drop => {
+				Object.keys(this.styleNames).forEach(key => drop.addOption(key, this.styleNames[key].styleName ?? key));
+				drop.setValue(selectedstyleName);
+				drop.onChange(value => selectedstyleName = value);
+			});
 
 		new Setting(contentEl).addButton(btn => {
 			btn.setButtonText("Add polyline")

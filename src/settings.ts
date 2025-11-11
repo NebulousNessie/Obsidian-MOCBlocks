@@ -106,12 +106,25 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 			});
 
 			// Style name (always visible)
-			//const styleNameEl = row.createEl("span", { text: styleName, cls: "mocblock-settings-style-title" });
+			// Style name (always visible)
+			const styleNameEl = row.createEl("span", { text: config.styleName ?? styleName, cls: "mocblock-settings-style-title" });
 
 			// Details div (hidden by default)
 			const detailsDiv = containerEl.createDiv({ cls: "mocblock-settings-style-details" });
 
 			// Icon dropdown
+			// Editable display name for the style
+			new Setting(detailsDiv)
+				.setName("Name")
+				.addText(text => {
+					text.setValue(config.styleName ?? styleName);
+					text.onChange(async (v) => {
+						config.styleName = v;
+						await this.plugin.saveSettings();
+						styleNameEl.setText(config.styleName ?? styleName);
+					});
+				});
+
 			new Setting(detailsDiv)
 				.setName("Icon")
 				.addDropdown(drop => {

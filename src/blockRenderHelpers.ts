@@ -41,7 +41,11 @@ export function renderPinMarker(
         const opacity = settings.pinsAlwaysOpaque ? "1" : (config?.opacity ?? "0.5");  
     //--------------------------------
 
-    const svgMarkup = getStyledIconSVG(iconName, { width: 35, height: 35, fill: fillColour, stroke: strokeColour, opacity: opacity, strokeWidth: 0.75 });
+    // const iconSize = (config as any)?.iconSize ? Number((config as any).iconSize) : 24;
+    // markerEl.style.width = `${iconSize}px`;
+    // markerEl.style.height = `${iconSize}px`;
+
+    const svgMarkup = getStyledIconSVG(iconName, { fill: fillColour, stroke: strokeColour, opacity: opacity, strokeWidth: 0.75 });
     //console.log("Resolved icon settings:", { StyleName, iconName, fillColour, strokeColour });
 
     // Render the marker SVGs (polyline and pins)

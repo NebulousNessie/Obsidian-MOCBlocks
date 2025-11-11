@@ -78,8 +78,8 @@ svg.moc-overlay {
 	pointer-events: auto !important;
 }
 .mocblockRenderer-marker-pin svg {
-	width: 20px;
-	height: 20px;
+	width: 24px;
+	height: 24px;
 	fill: var(--text-normal);
 	pointer-events: auto  !important;
 }

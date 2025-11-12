@@ -50,7 +50,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 			.setName("Data folder")
 			.setDesc("Folder in your vault where marker data files will be stored.")
 			.addText(text => {
-				text.setPlaceholder("E.g. mocdata");
+				text.setPlaceholder("E.g. Mocdata");
 				text.setValue(this.plugin.settings.dataFolder || "mocdata");
 
 				// Track value but don't save yet: annoying workaround to prevent save on every keystroke.
@@ -216,7 +216,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 
 		// Style input
 		addSetting.addText(text => {
-			text.setPlaceholder("E.g. style1");
+			text.setPlaceholder("E.g. Style 1");
 			text.onChange(value => { styleValue = value; });
 		});
 

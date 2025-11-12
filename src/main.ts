@@ -1,4 +1,4 @@
-import { Plugin, TFile, MarkdownView, parseYaml, Component, WorkspaceLeaf, MarkdownPostProcessorContext } from "obsidian";
+import { Plugin, TFile, MarkdownView, parseYaml, Component, MarkdownPostProcessorContext } from "obsidian";
 
 import { loadMarkerDataMD, saveUpdatedMarker, refreshMOCBlock, deleteMarkerFromFile } from "./helpers";
 import { MOCBlockSettings, DEFAULT_SETTINGS, MOCBlockSettingTab } from "./settings";
@@ -85,8 +85,8 @@ export default class MOCBlockPlugin extends Plugin {
 				config = normalizedConfig as MocConfig;
 
             } catch (e) {
-                console.error("Invalid YAML in moc block", e);
-                el.createEl("pre", { text: "Invalid yaml in moc block." });
+                console.error("Invalid YAML in moc block.", e);
+                el.createEl("pre", { text: "Invalid YAML in moc block." });
                 return;
             }
 		// --------------------------------

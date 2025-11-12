@@ -61,7 +61,7 @@ export function getStyledIconSVG(
         });
 
         return svg.outerHTML;
-    } catch (e) {
+    } catch {
         return null;
     }
 }

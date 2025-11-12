@@ -50,7 +50,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 			.setName("Data folder")
 			.setDesc("Folder in your vault where marker data files will be stored.")
 			.addText(text => {
-				text.setPlaceholder("e.g. mocdata");
+				text.setPlaceholder("E.g. mocdata");
 				text.setValue(this.plugin.settings.dataFolder || "mocdata");
 
 				// Track value but don't save yet: annoying workaround to prevent save on every keystroke.
@@ -79,7 +79,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 		// ---------------------------------
 
 	// containerEl.createEl("h2", { text: "Style settings" });
-	new Setting(containerEl).setName('Marker & Polyline Styles').setHeading();
+	new Setting(containerEl).setName('Marker & polyline styles').setHeading();
 
 		// Toggle for opaque pins
 		new Setting(containerEl)
@@ -130,7 +130,7 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 			new Setting(detailsDiv)
 				.setName("Icon")
 				.addDropdown(drop => {
-					AVAILABLE_ICONS.forEach(iconName => drop.addOption(iconName, iconName));
+					AVAILABLE_ICONS.forEach(iconName => void drop.addOption(iconName, iconName));
 					drop.setValue(config.icon);
 					drop.onChange(async (value) => {
 						config.icon = value;
@@ -216,13 +216,13 @@ export class MOCBlockSettingTab extends PluginSettingTab {
 
 		// Style input
 		addSetting.addText(text => {
-			text.setPlaceholder("e.g. style1");
+			text.setPlaceholder("E.g. style1");
 			text.onChange(value => { styleValue = value; });
 		});
 
 		// Icon input
 		addSetting.addDropdown(drop => {
-			AVAILABLE_ICONS.forEach(iconName => drop.addOption(iconName, iconName));
+			AVAILABLE_ICONS.forEach(iconName => void drop.addOption(iconName, iconName));
 			drop.setValue(iconValue);
 			drop.onChange(value => { iconValue = value; });
 		});

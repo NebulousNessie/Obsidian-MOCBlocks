@@ -142,7 +142,7 @@ export class NewPinModal extends Modal {
 		new Setting(contentEl)
 			.setName("Style")
 			.addDropdown(drop => {
-				Object.keys(this.styleNames).forEach(key => drop.addOption(key, this.styleNames[key].styleName ?? key));
+				Object.keys(this.styleNames).forEach(key => void drop.addOption(key, this.styleNames[key].styleName ?? key));
 				drop.setValue(selectedstyleName);
 				drop.onChange(value => selectedstyleName = value);
 			});
@@ -335,7 +335,7 @@ export class NewPolylineModal extends Modal {
 		new Setting(contentEl)
 			.setName("Style")
 			.addDropdown(drop => {
-				Object.keys(this.styleNames).forEach(key => drop.addOption(key, this.styleNames[key].styleName ?? key));
+				Object.keys(this.styleNames).forEach(key => void drop.addOption(key, this.styleNames[key].styleName ?? key));
 				drop.setValue(selectedstyleName);
 				drop.onChange(value => selectedstyleName = value);
 			});

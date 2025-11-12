@@ -129,7 +129,7 @@ export function renderPinMarker(
 
                     const onDocMouseUp = () => {
                         // Wrap async logic in an IIFE so the registered handler returns void
-                        (async () => {
+                        void (async () => {
                             if (isDragging) {
                                 isDragging = false;
 
@@ -376,7 +376,7 @@ export function addResizeHandle(
 
     const onMouseUp = () => {
         // Wrap async logic in an IIFE so the registered handler returns void
-        (async () => {
+        void (async () => {
             if (isResizing) {
                 isResizing = false;
                 document.body.classList.remove("mocblockRenderer-userselect-none");

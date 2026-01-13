@@ -17,7 +17,7 @@ export default class MOCBlockPlugin extends Plugin {
 		const folder = this.app.vault.getFolderByPath(dataFolderPath);
 		if (!folder) {
 			try {
-				await this.app.vault.createFolder(dataFolderPath);
+				await this.app.vault.createFolder("MOCData");
 			} catch (e) {
 				if (!(e instanceof Error) || !e.message || !e.message.includes("Folder already exists")) {
 					console.error("Failed to create data folder:", e);

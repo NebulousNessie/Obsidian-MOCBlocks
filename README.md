@@ -36,9 +36,15 @@ Marker Style data is stored in the plugin data.
 > Marker Styles data will be deleted upon plugin deletion from your vault.
 ---
 
+# Installation
+In Obsidian, enable community plugins: Settings → Community plugins → Turn on community plugins
+Install MOC Blocks - Click "Browse" → Search for "MOC Blocks" → Install
+Ensure the plugin is enabled, and enjoy!
+
+
 # Known issues
 
-- For up-to-date issues, see the [Git repository](https://github.com/NebulousNessie/Obsidian-MOCBlocks)
+- For up-to-date issues, see the [MOC Block Git repo](https://github.com/NebulousNessie/Obsidian-MOCBlocks)
 - The [image converter](https://github.com/xryul/obsidian-image-converter) plugin breaks the MOC Block resizing feature.
 
 ---

@@ -1,7 +1,7 @@
 {
 	"name": "moc-blocks",
 	"version": "1.0.0",
-	"description": "Interactive Maps of Content for organising vault visually.",
+	"description": "Interactive Maps of Content for organising your vault visually.",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",

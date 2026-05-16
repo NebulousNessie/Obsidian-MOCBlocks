@@ -3,7 +3,7 @@ Any bugs, please report it on the [git repository](https://github.com/NebulousNe
 This is a plugin for creating simple Maps of Content, with a background image, using new 'MOC Block' code blocks.
 
 ---
-## How the Plugin Works
+## Using the Plugin
 
 ### Adding a MOC Block
 ![Adding a MOC Block](assets/Gif_1.gif)

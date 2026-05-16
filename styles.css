@@ -6,20 +6,20 @@
   position: relative;
   display: inline-block;
   box-sizing: border-box;
-  cursor: default !important;
+  cursor: default /*!important */;
   background:rgba(255, 255, 255, 0)
 }
 .mocblockRenderer-container img {
   display: block;
   width: 100%;
   height: auto;
-  border: 1px solid #333;
+  border: 1px solid #363333;
   border-radius: 8px;
   transition: width 0.15s cubic-bezier(.4,0,.2,1);
-  cursor: default !important;
+  cursor: default /*!important */;
 }
 .mocblockRenderer-userselect-none {
-  user-select: none !important;
+  user-select: none /*!important */;
 }
 /* .mocblockRenderer-container.has-width,
 .mocblockRenderer-container.has-width img {
@@ -29,7 +29,7 @@
 
 /* Editing Mode */
 .mocblockRenderer-editing-outline {
-  box-shadow: 0 0 0 3px var(--color-accent, #5b9aff) !important;
+  box-shadow: 0 0 0 3px var(--color-accent, #5b9aff) /*!important */;
   border-radius: 6px;
   z-index: 20;
   transition: box-shadow 0.2s;
@@ -40,7 +40,7 @@
   width: 100%;
   height: 100%;
   border-radius: 6px;
-  pointer-events: none  !important;
+  pointer-events: none  /*!important */;
   z-index: 15;
   transition: background 0.2s;
 }
@@ -51,7 +51,7 @@
   width: 8px;
   height: 50%;
   margin-top: 25%;
-  cursor: ew-resize !important;
+  cursor: ew-resize /*!important */;
   background: var(--background-modifier-hover, rgba(200,200,200,0.25));
   border-radius: 8px;
   z-index: 20;
@@ -68,20 +68,20 @@ svg.moc-overlay {
   position: absolute;
   left: 0;
   top: 0;
-  pointer-events: none  !important;
+  pointer-events: none  /*!important */;
 }
 
 .mocblockRenderer-marker-pin {
 	position: absolute;
 	transform: translate(-50%, -50%);
-	cursor: pointer !important;
-	pointer-events: auto !important;
+	cursor: pointer /*!important */;
+	pointer-events: auto /*!important */;
 }
 .mocblockRenderer-marker-pin svg {
 	width: 24px;
 	height: 24px;
 	fill: var(--text-normal);
-	pointer-events: auto  !important;
+	pointer-events: auto  /*!important */;
 }
 
 .mocblockRenderer-marker-polyline {
@@ -90,11 +90,11 @@ svg.moc-overlay {
   top: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none !important;
+  pointer-events: none /*!important */;
 }
 svg.moc-overlay polygon {
-  pointer-events: auto !important;
-  cursor: pointer !important;
+  pointer-events: auto /*!important */;
+  cursor: pointer /*!important */;
 }
 .mocblockRenderer-polygon-preview {
   stroke: var(--color-accent, #5b9aff);
@@ -135,11 +135,11 @@ svg.moc-overlay polygon {
 /* Marker Styles */
 .mocblock-settings-style-toggle {
   margin-right: 0.5em;
-  cursor: pointer !important;
+  cursor: pointer /*!important */;
   background: var(--background-secondary);
   border: 1px solid var(--background-modifier-border);
   font-size: 1em;
-  margin-right: 0.7em;
+  /* margin-right: 0.7em; */
 }
 .mocblock-settings-style-details {
   margin-left: 2em;
@@ -160,5 +160,5 @@ svg.moc-overlay polygon {
 
 /* Multifunctional styles: used everywhere */
 .mocblock-trash-hover:hover {
-  color: var(--color-red, red) !important;
+  color: var(--color-red, red) /*!important */;
 }

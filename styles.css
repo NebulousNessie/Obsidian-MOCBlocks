@@ -157,6 +157,11 @@ svg.moc-overlay polygon {
     font-weight: bold;
 }
 
+.mocblock-pin-link svg,
+.mocblock-pin-link path,
+.mocblock-pin-link g {
+    pointer-events: none;
+}
 
 /* Multifunctional styles: used everywhere */
 .mocblock-trash-hover:hover {

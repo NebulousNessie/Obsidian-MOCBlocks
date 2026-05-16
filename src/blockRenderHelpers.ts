@@ -74,7 +74,7 @@ export function renderPinMarker(
                     evt.stopPropagation();
                     const linkTarget = pin.link?.replace(/^\[\[|\]\]$/g, '') ?? null;
                     if (linkTarget) {
-                        	void app.workspace.openLinkText(linkTarget, ctx.sourcePath);
+                            void app.workspace.openLinkText(linkTarget, ctx.sourcePath);
                     }
                 };
                 parentComponent.registerDomEvent(svgEl as unknown as HTMLElement, "click", onClick);
@@ -385,7 +385,7 @@ export function addResizeHandle(
                 const file = app.vault.getFileByPath(ctx.sourcePath);
                 if (!(file instanceof TFile)) return;
 
-                const content = await app.vault.read(file);
+                const content = await app.vault.cachedRead(file);
                 const section = ctx.getSectionInfo(el);
                 if (!section) return;
 

@@ -64,7 +64,7 @@ export async function saveUpdatedMarker(
   const file = vault.getAbstractFileByPath(path);
   if (!(file instanceof TFile)) return;
 
-  const content = await vault.read(file);
+  const content = await vault.cachedRead(file);
   const match = content.match(/```json\s*([\s\S]*?)```/);
   if (!match) return;
 
@@ -101,7 +101,7 @@ export async function addMarkerToFile(
   const file = vault.getAbstractFileByPath(path);
   if (!(file instanceof TFile)) throw new Error(`File not found: ${path}`);
 
-  const content = await vault.read(file);
+  const content = await vault.cachedRead(file);
   const jsonMatch = content.match(/```json\s*([\s\S]*?)```/);
   if (!jsonMatch) throw new Error(`No JSON block found in ${path}`);
 
@@ -138,29 +138,60 @@ export async function refreshMOCBlock(
   );
 }
 
+// export async function deleteMarkerFromFile(
+//   vault: Vault,
+//   file: string | TFile,   // Supports path or TFile
+//   markerId: string
+// ): Promise<void> {
+//   const tfile = typeof file === "string" 
+//     ? vault.getAbstractFileByPath(file) 
+//     : file;
+
+//   if (!(tfile instanceof TFile)) return;
+
+//   const content = await vault.cachedRead(tfile);
+//   const match = content.match(/```json\s*([\s\S]*?)```/);
+//   if (!match) return;
+
+//   const markerData: MarkerData = JSON.parse(match[1]);
+//   markerData.markers = markerData.markers.filter(m => m.markerId !== markerId);
+
+//   const newJson = "```json\n" + JSON.stringify(markerData, null, 2) + "\n```";
+//   const newContent = content.replace(/```json\s*[\s\S]*?```/, newJson);
+
+//   await vault.process(tfile, () => newContent);
+//   //console.log("🗑️ Marker deleted:", markerId);
+// }
+
 export async function deleteMarkerFromFile(
   vault: Vault,
-  file: string | TFile,   // Supports path or TFile
+  file: string | TFile,
   markerId: string
 ): Promise<void> {
-  const tfile = typeof file === "string" 
-    ? vault.getAbstractFileByPath(file) 
-    : file;
+  const tfile =
+    typeof file === "string"
+      ? vault.getAbstractFileByPath(file)
+      : file;
 
   if (!(tfile instanceof TFile)) return;
 
-  const content = await vault.read(tfile);
-  const match = content.match(/```json\s*([\s\S]*?)```/);
-  if (!match) return;
+  await vault.process(tfile, (data) => {
+    const match = data.match(/```json\s*([\s\S]*?)```/);
+    if (!match) return data;
 
-  const markerData: MarkerData = JSON.parse(match[1]);
-  markerData.markers = markerData.markers.filter(m => m.markerId !== markerId);
+    const markerData: MarkerData = JSON.parse(match[1]);
 
-  const newJson = "```json\n" + JSON.stringify(markerData, null, 2) + "\n```";
-  const newContent = content.replace(/```json\s*[\s\S]*?```/, newJson);
+    markerData.markers = markerData.markers.filter(
+      (m) => m.markerId !== markerId
+    );
 
-  await vault.process(tfile, () => newContent);
-  //console.log("🗑️ Marker deleted:", markerId);
+    const newJson =
+      "```json\n" +
+      JSON.stringify(markerData, null, 2) +
+      "\n```";
+
+    return data.replace(/```json\s*[\s\S]*?```/, newJson);
+  });
 }
 
 export async function renameDataFolder(app: App, oldPath: string, newPath: string) {

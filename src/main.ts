@@ -1,4 +1,4 @@
-import { Plugin, TFile, MarkdownView, parseYaml, Component, MarkdownPostProcessorContext } from "obsidian";
+import { Plugin, TFile, MarkdownView, parseYaml, MarkdownPostProcessorContext, MarkdownRenderChild } from "obsidian";
 
 import { loadMarkerDataMD, saveUpdatedMarker, refreshMOCBlock, deleteMarkerFromFile } from "./helpers";
 import { MOCBlockSettings, DEFAULT_SETTINGS, MOCBlockSettingTab } from "./settings";
@@ -50,11 +50,12 @@ export default class MOCBlockPlugin extends Plugin {
 		//console.log("Current MOC plugin settings:", this.settings);
 
 		this.registerMarkdownCodeBlockProcessor("moc", async (source, el, ctx) => {
-            const mocBlockComponent = new Component();
-            this.addChild(mocBlockComponent);
+            const mocBlockComponent = new MarkdownRenderChild(el);
+            ctx.addChild(mocBlockComponent);
 			//console.log("Processing MOC block:", source);
 
 			let view: MarkdownView | undefined = undefined;
+
 			for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
 				const candidate = leaf.view as MarkdownView | undefined;
 				if (candidate && candidate.file && candidate.file.path === ctx.sourcePath) {

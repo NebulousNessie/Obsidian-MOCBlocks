@@ -85,19 +85,23 @@ export function addPinButton(
             }
         };
 
+        // Attach temporary handlers directly so we can remove them on cleanup
+        container.addEventListener("click", clickHandler, true);
+        window.addEventListener("keydown", escHandler, true);
+
         // Cleanup removes listeners and restores UI
         function cleanup() {
             img.classList.remove("mocblockRenderer-editing-outline");
             //img.style.cursor = "";
             pinBtn.removeAttribute("disabled");
             polyBtn.removeAttribute("disabled");
-            // Component owns the listeners; no manual removal needed
+            // Explicitly remove the event listeners
+            container.removeEventListener("click", clickHandler, true);
+            window.removeEventListener("keydown", escHandler, true);
             svg.remove(); // remove SVG overlay
         }
 
         // Use capture so we see the click before other handlers; remove with cleanup
-    parentComponent.registerDomEvent(container as unknown as HTMLElement, "click", clickHandler, true);
-    parentComponent.registerDomEvent(window, "keydown", escHandler, true);
     };
 
     parentComponent.registerDomEvent(pinBtn, "click", () => setupPinFlow());
@@ -185,15 +189,6 @@ export function addPolylineButton(
             }
         };
 
-        // Cleanup removes listeners and restores UI
-        function cleanup() {
-            img.classList.remove("mocblockRenderer-editing-outline");
-            pinBtn.removeAttribute("disabled");
-            polyBtn.removeAttribute("disabled");
-            // Component owns the listeners; no manual removal needed
-            svg.remove(); // remove SVG overlay
-        }
-
         // Right-click handler to finish polyline
         const rightClickHandler = (evt: MouseEvent) => {
             evt.preventDefault();
@@ -224,9 +219,22 @@ export function addPolylineButton(
             newPolylineModal.open();
         };
 
-        parentComponent.registerDomEvent(img, "click", clickHandler);
-        parentComponent.registerDomEvent(img, "contextmenu", rightClickHandler);
-    parentComponent.registerDomEvent(window, "keydown", escHandler, true);
+        // Attach temporary handlers directly so we can remove them on cleanup
+        img.addEventListener("click", clickHandler);
+        img.addEventListener("contextmenu", rightClickHandler);
+        window.addEventListener("keydown", escHandler, true);
+
+        // Cleanup removes listeners and restores UI
+        function cleanup() {
+            img.classList.remove("mocblockRenderer-editing-outline");
+            pinBtn.removeAttribute("disabled");
+            polyBtn.removeAttribute("disabled");
+            // Explicitly remove the event listeners
+            img.removeEventListener("click", clickHandler);
+            img.removeEventListener("contextmenu", rightClickHandler);
+            window.removeEventListener("keydown", escHandler, true);
+            svg.remove(); // remove SVG overlay
+        }
     };
 
     parentComponent.registerDomEvent(polyBtn, "click", () => setupPolyFlow());

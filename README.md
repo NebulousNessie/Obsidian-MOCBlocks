@@ -1,4 +1,4 @@
-Any bugs, please report it on the [git repository](https://github.com/NebulousNessie/Obsidian-MOCBlocks-Dev/issues), thank you!
+Any bugs, please report it on the [git repository](https://github.com/NebulousNessie/Obsidian-MOCBlocks/issues), thank you!
 
 This is a plugin for creating simple Maps of Content, with a background image, using new 'MOC Block' code blocks.
 
